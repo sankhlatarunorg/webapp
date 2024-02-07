@@ -6,6 +6,7 @@ const workFactor = 8;
 const bodyParser = require('body-parser');
 const { checkIfPayloadIsEmpty } = require('./service');
 const database = require('./Model');
+const database = require('./Model');
 const User = require('./Model').users;
 
 var app = express();
@@ -46,10 +47,6 @@ function authenticate(req, res, next) {
     }
 }
 
-<<<<<<< HEAD
-
-
-<<<<<<< HEAD
 async function returnPasswordHash(password) {
     let salt = await bcrypt.genSalt(workFactor);
     return await bcrypt.hash(password, salt);
@@ -60,7 +57,7 @@ function authenticate(req, res, next) {
         const authHeader = req.headers.authorization;
 
         if (!authHeader) {
-            return res.sendStatus(401);
+            return res.status(401).send();
         }
 
         const credentials = base64.decode(authHeader.split(' ')[1]);
@@ -69,10 +66,10 @@ function authenticate(req, res, next) {
         (async () => {
             const user = await User.findOne({ where: { username: username } });
             if (!user) {
-                return res.status(401).send({ error: 'Invalid username'});
+                return res.status(403).json({ error: 'Invalid username'});
             }
             if (!bcrypt.compare(password, user.password)) {
-                return res.status(401).send({ error: 'Invalid password' });
+                return res.status(403).json({ error: 'Invalid password' });
             }
     
             req.user = user;
@@ -84,11 +81,45 @@ function authenticate(req, res, next) {
         res.status(400).send();
     }
 }
-=======
->>>>>>> 952c14d (add authenticate changes)
 
-=======
->>>>>>> 7a0ee26 (changes in read me and model)
+async function returnPasswordHash(password) {
+    let salt = await bcrypt.genSalt(workFactor);
+    return await bcrypt.hash(password, salt);
+}
+
+function authenticate(req, res, next) {
+    try {
+        const authHeader = req.headers.authorization;
+
+        if (!authHeader) {
+            return res.status(401).send();
+        }
+
+        const credentials = base64.decode(authHeader.split(' ')[1]);
+        const [username, password] = credentials.split(':');
+        console.log(username, password);
+        (async () => {
+            const user = await User.findOne({ where: { username: username } });
+            if (!user) {
+                return res.status(403).json({ error: 'Invalid username'});
+            }
+            if (!bcrypt.compare(password, user.password)) {
+                return res.status(403).json({ error: 'Invalid password' });
+            }
+    
+            req.user = user;
+            next();
+        })();
+       
+    } catch (e) {
+        console.log(e);
+        res.status(400).send();
+    }
+}
+
+
+
+
 app.use('/', (req, res, next) => {
     res.header('Cache-Control', 'no-cache');
     next();
