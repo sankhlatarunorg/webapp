@@ -32,7 +32,7 @@ async function authenticate(req, res) {
         const authHeader = req.headers.authorization;
 
         if (!authHeader) {
-            return res.status(401).send();
+            return res.status(400).send();
         }
 
         console.log('authenticating');
@@ -72,8 +72,8 @@ async function authenticate(req, res) {
 }
 
 function checkIfHeaderIsPresent(req, res) {
-    if (req.headers.authorization === undefined) {
-        return res.status(401).send();
+    if (req.headers.authorization !== undefined) {
+        return res.status(400).send();
     }
 }
 
@@ -97,6 +97,14 @@ async function checkIfAuthenticated(req, res) {
         return res.status(400).send();
     }
 }
+
+app.use((error, req, res, next) => {
+    if (error instanceof SyntaxError) {
+      return res.status(400).json({ error: 'Invalid JSON syntax' });
+    }
+  
+    next();
+  });
 
 app.use('/', (req, res, next) => {
     res.header('Cache-Control', 'no-cache');
@@ -148,10 +156,16 @@ app.use('/v1/user/self', (req, res, next) => {
 
 app.get('/v1/user/self', (req, res) => {
     try{
+        if (Object.keys(req.body).length !== 0) {
+            return res.status(400).send();
+        }
+        if (Object.keys(req.query).length > 0) {
+            return res.status(400).send();
+        }
         return authenticate(req, res)
         .then((result)=>{  
             console.log("result:",result?.statusCode); 
-            if( [503,401].indexOf(result?.statusCode) !== -1){
+            if( [503,401,400].indexOf(result?.statusCode) !== -1){
                 console.log("checking status code");
                 return res.status(result.statusCode).send();
             }
@@ -180,10 +194,20 @@ app.get('/v1/user/self', (req, res) => {
 
 app.put('/v1/user/self', async (req, res, next) => {
     try {
+        // check it request is in correct format of json
+        // if(!JSON.parse(req.body)){
+        //     return res.status(400).send();
+        // }
+        const allowedParameters = ['first_name', 'last_name', 'password', 'username'];
+        const receivedParameters = Object.keys(req.body);
+        const invalidParameters = receivedParameters.filter(param => !allowedParameters.includes(param));
+        if (invalidParameters.length > 0) {
+            return res.status(400).send();
+        }
         return authenticate(req, res, next)
             .then((result)=>{  
                 console.log("result:",result?.statusCode); 
-                if( [503,401].indexOf(result?.statusCode) !== -1){
+                if( [503,401,400].indexOf(result?.statusCode) !== -1){
                     console.log("checking status code");
                     return res.status(result.statusCode).send();
                 }
@@ -224,6 +248,12 @@ app.put('/v1/user/self', async (req, res, next) => {
 
 app.post('/v1/user/self', (req, res) => {
     try {
+        const allowedParameters = ['first_name', 'last_name', 'password', 'username'];
+        const receivedParameters = Object.keys(req.body);
+        const invalidParameters = receivedParameters.filter(param => !allowedParameters.includes(param));
+        if (invalidParameters.length > 0) {
+            return res.status(400).send();
+        }
         return checkIfAuthenticated(req, res)
         .then((result)=>{
             if([503,400].indexOf(result?.statusCode) !== -1){
@@ -278,7 +308,12 @@ app.post('/v1/user/self', (req, res) => {
 
 app.get('/healthz', function (req, res) {
     checkIfHeaderIsPresent(req, res);
-   
+    if (Object.keys(req.body).length !== 0) {
+        return res.status(400).send();
+    }
+    if (Object.keys(req.query).length > 0) {
+        return res.status(400).send();
+    }
     (async () => {
         try {
             await database.sequelize.authenticate();
