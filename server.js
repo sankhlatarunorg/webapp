@@ -67,7 +67,6 @@ async function authenticate(req, res) {
     } catch (e) {
         console.log(e);
         return res.status(400);
-        next();
     }
 }
 
@@ -100,9 +99,8 @@ async function checkIfAuthenticated(req, res) {
 
 app.use((error, req, res, next) => {
     if (error instanceof SyntaxError) {
-      return res.status(400).json({ error: 'Invalid JSON syntax' });
+      return res.status(400).send();
     }
-  
     next();
   });
 
