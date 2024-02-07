@@ -42,7 +42,6 @@ module.exports = (sequelize,DataTypes,Sequelize)=>{
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
         allowNull: false,
-        readOnly: true
       }
     } ,{
       freezeTableName: true,
