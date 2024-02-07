@@ -16,33 +16,85 @@ async function returnPasswordHash(password) {
     return await bcrypt.hash(password, salt);
 }
 
-function authenticate(req, res, next) {
+async function checkIfDBConnected() {
     try {
+        await database.sequelize.authenticate();
+        return true;
+    } catch (e) {
+        console.log("database not connected error:", e);
+        return false;
+    }
+}
+
+async function authenticate(req, res) {
+    try {
+        console.log("checking auth header");
         const authHeader = req.headers.authorization;
 
         if (!authHeader) {
             return res.status(401).send();
         }
 
+        console.log('authenticating');
+        let check = await checkIfDBConnected();
+        console.log("checking db connection ");
+        console.log("check:",check);
+        if (check == false) {
+            return res.status(503).send();
+        }
+       
+
         const credentials = base64.decode(authHeader.split(' ')[1]);
         const [username, password] = credentials.split(':');
         console.log(username, password);
-        (async () => {
-            const user = await User.findOne({ where: { username: username } });
-            if (!user) {
-                return res.status(401).json({ error: 'Invalid username'});
+        console.log("checking user");
+        return User.findOne({ where: { username: username } })
+            .then((user) => {
+                console.log("found user: ",user);
+                if (!user) {
+                    return res.status(401).send();
+                }
+                if (!bcrypt.compare(password, user.password)) {
+                    return res.status(401).send();
+                }
+                req.user = user;
+                console.log("finished checking user");
+            }).catch((e) => {
+                console.log(e);
+                return res.status(400).send();
+            });
+            
+    } catch (e) {
+        console.log(e);
+        return res.status(400);
+        next();
+    }
+}
+
+function checkIfHeaderIsPresent(req, res) {
+    if (req.headers.authorization === undefined) {
+        return res.status(401).send();
+    }
+}
+
+async function checkIfAuthenticated(req, res) {
+    try {
+        console.log('checking if authenticated');
+        if (req.headers.authorization !== undefined) {
+            return res.status(400).send();
+        }
+        return checkIfDBConnected().then((check) => {
+            if (check === false) {
+                return res.status(503).send();
             }
-            if (!bcrypt.compare(password, user.password)) {
-                return res.status(401).json({ error: 'Invalid password' });
-            }
-    
-            req.user = user;
-            next();
-        })();
+        }).catch((e) => {
+            console.log(e);
+            return res.status(400).send();
+        });
        
     } catch (e) {
         console.log(e);
-        res.status(400).send();
+        return res.status(400).send();
     }
 }
 
@@ -53,87 +105,180 @@ app.use('/', (req, res, next) => {
 
 app.use('/healthz', (req, res, next) => {
     if (req.method !== 'GET') {
-        res.status(405).send();
+        return res.status(405).send();
     }
     next();
 });
 
 app.use('/v1/user/self', (req, res, next) => {
-    if (['GET', 'PUT', 'POST'].indexOf(req.method) === -1){
-        res.status(405).send();
+    if (['GET', 'PUT', 'POST'].indexOf(req.method) === -1) {
+        return res.status(405).send();
     }
     next();
 });
+//     if(['GET','PUT'].indexOf(req.method) !== -1){
+//         console.log("validating auth header");
+//         authenticate(req, res, next)
+//             .then((result)=>{  
+//                 console.log("result:",result?.statusCode); 
+//                 if( [503,401].indexOf(result?.statusCode) !== -1){
+//                     console.log("checking status code");
+//                     return res.status(result.statusCode).send();
+//                 }
+//                 console.log("Finished authenticating");
+//                 next();
+//             }).catch((e)=>{
+//                 console.log(e);
+//                 return res.status(400).send();
+//             });        
+//     }
+//     if(req.method === 'POST'){
+//         checkIfAuthenticated(req, res, next)
+//         .then((result)=>{
+//             if([503,400].indexOf(result?.statusCode) !== -1){
+//                 return res.status(result.statusCode).send();
+//             }
+//             next();
+//         }).catch((e)=>{
+//             console.log(e);
+//             return res.status(400).send();
+//         });
+//     }
+// });
 
-
-app.get('/v1/user/self', authenticate, (req, res) => {
-    res.status(200).json({
-        "id": req.user.id,
-        "first_name": req.user.first_name,
-        "last_name": req.user.last_name,
-        "username": req.user.username,
-        "account_created": req.user.account_created,
-        "account_updated": req.user.account_updated
-    })
-});
-
-app.put('/v1/user/self', authenticate, async (req, res, next) => {
-    try {
-        if (req.body.first_name === undefined || req.body.last_name === undefined || req.body.password === undefined || req.body.username === undefined) {
-            res.status(400).send();
-        }
-        const passwordHash = await returnPasswordHash(req.body.password);
-
-        await User.update({
-            first_name: req.body.first_name,
-            last_name: req.body.last_name,
-            password: passwordHash,
-            username: req.body.username
-        }, {
-            where: {
-                id: req.user.id
+app.get('/v1/user/self', (req, res) => {
+    try{
+        return authenticate(req, res)
+        .then((result)=>{  
+            console.log("result:",result?.statusCode); 
+            if( [503,401].indexOf(result?.statusCode) !== -1){
+                console.log("checking status code");
+                return res.status(result.statusCode).send();
             }
-        });
-        res.status(200).send();
-    } catch (e) {
+            console.log("Finished authenticating");
+            console.log("get user self");
+            const user = req.user;
+            console.log("response stats code:",res.statusCode);
+            console.log("response headers: ",res.getHeaders());
+            return res.status(200).send({
+                "id": user.id,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "username": user.username,
+                "account_created": user.account_created,
+                "account_updated": user.account_updated
+            })
+        }).catch((e)=>{
+            console.log(e);
+            return res.status(400).send();
+        });        
+    }catch(e){
         console.log(e);
-        res.status(400).send();
+        return res.status(400).send();
     }
 });
 
-app.post('/v1/user/self', async (req, res) => {
+app.put('/v1/user/self', async (req, res, next) => {
     try {
-        if (req.body.first_name === undefined || req.body.last_name === undefined || req.body.password === undefined || req.body.username === undefined) {
-            res.status(400).send();
-        }
-
-        const username = await User.findOne({
-            where: {
-                username: req.body.username,
-            },
-        });
-        console.log(username);
-        if (username !== null) {
-            res.status(409).send();
-        }
-        const passwordHash = await returnPasswordHash(req.body.password);
-        console.log(passwordHash)
-        await User.create({
-            first_name: req.body.first_name,
-            last_name: req.body.last_name,
-            password: passwordHash,
-            username: req.body.username
-        });
-        res.status(201).send();
+        return authenticate(req, res, next)
+            .then((result)=>{  
+                console.log("result:",result?.statusCode); 
+                if( [503,401].indexOf(result?.statusCode) !== -1){
+                    console.log("checking status code");
+                    return res.status(result.statusCode).send();
+                }
+                console.log("Finished authenticating");
+                if (req.body.first_name === undefined || req.body.last_name === undefined || req.body.password === undefined || req.body.username === undefined) {
+                    return res.status(400).send();
+                }
+                return returnPasswordHash(req.body.password).then((passwordHash) => {
+                    return User.update({
+                        first_name: req.body.first_name,
+                        last_name: req.body.last_name,
+                        password: passwordHash,
+                        username: req.body.username
+                    }, {
+                        where: {
+                            id: req.user.id
+                        }
+                    }).then(() => {
+                    return res.status(200).send()
+                    }).catch((e) => {
+                        console.log(e);
+                        return res.status(400).send();
+                    });
+                }
+                ).catch((e) => {
+                    console.log(e);
+                    return res.status(400).send();
+                });
+            }).catch((e)=>{
+                console.log(e);
+                return res.status(400).send();
+            });        
     } catch (e) {
         console.log(e);
-        res.status(400).send();
+        return res.status(400).send();
+    }
+});
+
+app.post('/v1/user/self', (req, res) => {
+    try {
+        return checkIfAuthenticated(req, res)
+        .then((result)=>{
+            if([503,400].indexOf(result?.statusCode) !== -1){
+                return res.status(result.statusCode).send();
+            }
+            console.log("post user self");
+            if (req.body.first_name === undefined || req.body.last_name === undefined || req.body.password === undefined || req.body.username === undefined) {
+                return res.status(400).send();
+            }
+            return User.findOne({
+                where: {
+                    username: req.body.username,
+                },
+            }).then((username) => {
+                console.log(username);
+                if (username !== null) {
+                    return res.status(409).send();
+                } 
+                return returnPasswordHash(req.body.password).then((passwordHash) => {
+                    return User.create({
+                        first_name: req.body.first_name,
+                        last_name: req.body.last_name,
+                        password: passwordHash,
+                        username: req.body.username
+                    }).then(() => {
+                        return res.status(201).send();
+                    }).catch((e) => {
+                        console.log(e);
+                        return res.status(400).send();
+                    });;
+                }).catch((e) => {
+                    console.log(e);
+                    return res.status(400).send();
+                });
+            }).catch((e) => {
+                console.log(e);
+                return res.status(400).send();
+            });
+    
+        }).catch((e)=>{
+            console.log(e);
+            return res.status(400).send();
+        });
+      
+      
+    } catch (e) {
+        console.log(e);
+        return res.status(400).send();
     }
 });
 
 
-app.get('/healthz', async function (req, res) {
-    checkIfPayloadIsEmpty(req, res);
+app.get('/healthz', function (req, res) {
+    checkIfHeaderIsPresent(req, res);
+   
     (async () => {
         try {
             await database.sequelize.authenticate();
@@ -141,20 +286,21 @@ app.get('/healthz', async function (req, res) {
                 await User.sync({ force: true });
                 // Table created
                 const users = await User.findAll();
-                console.log(users);
+                // console.log(users);
 
             })();
             console.log('Connection has been established successfully.');
-            res.status(200).send();
+            return res.status(200).send();
         } catch (error) {
             console.error('Unable to connect to the database:', error);
-            res.status(503).send();
+            return res.status(503).send();
         }
     })();
 });
 
 app.use('/', (req, res) => {
-    res.status(404).send();
+    console.log("404 not found  ");
+    return res.status(404).send();
 });
 
 app.listen(3000, function () {

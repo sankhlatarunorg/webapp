@@ -2,12 +2,12 @@
 const {Sequelize,DataTypes} = require('sequelize')
 
 const sequelize = new Sequelize(
-    process.env.DB_NAME,
-    process.env.DB_USER,
+    "postgres",
+    "postgres",
     "Renuka16@",
     {
-        host: process.env.DB_HOST,
-        dialect: process.env.DB_DIALECT,
+        host: "localhost",
+        dialect: "postgres",
         logging: false
     }
 );
@@ -15,7 +15,7 @@ const sequelize = new Sequelize(
 sequelize.authenticate().then(() => {
     console.log(`Database connected to discover`)
 }).catch((err) => {
-    console.log(err)
+    console.log(`Start your Database: `+err)
 })
 
 const database = {}
