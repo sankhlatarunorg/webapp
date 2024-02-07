@@ -4,6 +4,9 @@ const { checkIfPayloadIsEmpty } = require('./service');
 require('dotenv').config();
 const User = require('./Model').users;
 
+
+
+const database = require('./Model');
 var app = express();
 app.use(bodyParser.json());
 
