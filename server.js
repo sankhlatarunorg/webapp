@@ -1,7 +1,11 @@
 const express = require('express');
+const bcrypt = require('bcrypt');
+require('dotenv').config();
+const base64 = require('base-64');
+const workFactor = 8;
 const bodyParser = require('body-parser');
 const { checkIfPayloadIsEmpty } = require('./service');
-require('dotenv').config();
+const database = require('./Model');
 const User = require('./Model').users;
 
 var app = express();
@@ -17,7 +21,7 @@ function authenticate(req, res, next) {
         const authHeader = req.headers.authorization;
 
         if (!authHeader) {
-            return res.sendStatus(401);
+            return res.status(401).send();
         }
 
         const credentials = base64.decode(authHeader.split(' ')[1]);
@@ -26,10 +30,10 @@ function authenticate(req, res, next) {
         (async () => {
             const user = await User.findOne({ where: { username: username } });
             if (!user) {
-                return res.status(401).send({ error: 'Invalid username'});
+                return res.status(403).json({ error: 'Invalid username'});
             }
             if (!bcrypt.compare(password, user.password)) {
-                return res.status(401).send({ error: 'Invalid password' });
+                return res.status(403).json({ error: 'Invalid password' });
             }
     
             req.user = user;
@@ -42,9 +46,6 @@ function authenticate(req, res, next) {
     }
 }
 
-
-
-
 app.use('/', (req, res, next) => {
     res.header('Cache-Control', 'no-cache');
     next();
@@ -55,6 +56,80 @@ app.use('/healthz', (req, res, next) => {
         res.status(405).send();
     }
     next();
+});
+
+app.use('/v1/user/self', (req, res, next) => {
+    if (['GET', 'PUT', 'POST'].indexOf(req.method) === -1){
+        res.status(405).send();
+    }
+    next();
+});
+
+
+app.get('/v1/user/self', authenticate, (req, res) => {
+    res.status(200).json({
+        "id": req.user.id,
+        "first_name": req.user.first_name,
+        "last_name": req.user.last_name,
+        "username": req.user.username,
+        "account_created": req.user.account_created,
+        "account_updated": req.user.account_updated
+    })
+});
+
+app.put('/v1/user/self', authenticate, async (req, res, next) => {
+    try {
+        if (req.body.first_name === undefined || req.body.last_name === undefined || req.body.password === undefined || req.body.username === undefined) {
+            res.status(400).send();
+        }
+        const passwordHash = await returnPasswordHash(req.body.password);
+
+        await User.update({
+            first_name: req.body.first_name,
+            last_name: req.body.last_name,
+            password: passwordHash,
+            username: req.body.username,
+            account_updated: new Date()
+        }, {
+            where: {
+                id: req.user.id
+            }
+        });
+        res.status(200).send();
+    } catch (e) {
+        console.log(e);
+        res.status(400).send();
+    }
+});
+
+app.post('/v1/user/self', async (req, res) => {
+    try {
+        if (req.body.first_name === undefined || req.body.last_name === undefined || req.body.password === undefined || req.body.username === undefined) {
+            res.status(400).send();
+        }
+
+        const username = await User.findOne({
+            where: {
+                username: req.body.username,
+            },
+        });
+        console.log(username);
+        if (username !== null) {
+            res.status(409).send();
+        }
+        const passwordHash = await returnPasswordHash(req.body.password);
+        console.log(passwordHash)
+        await User.create({
+            first_name: req.body.first_name,
+            last_name: req.body.last_name,
+            password: passwordHash,
+            username: req.body.username
+        });
+        res.status(201).send();
+    } catch (e) {
+        console.log(e);
+        res.status(400).send();
+    }
 });
 
 app.get('/healthz', async function (req, res) {
