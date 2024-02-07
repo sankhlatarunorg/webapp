@@ -44,6 +44,7 @@ function authenticate(req, res, next) {
 
 
 
+<<<<<<< HEAD
 async function returnPasswordHash(password) {
     let salt = await bcrypt.genSalt(workFactor);
     return await bcrypt.hash(password, salt);
@@ -78,6 +79,8 @@ function authenticate(req, res, next) {
         res.status(400).send();
     }
 }
+=======
+>>>>>>> 952c14d (add authenticate changes)
 
 app.use('/', (req, res, next) => {
     res.header('Cache-Control', 'no-cache');
