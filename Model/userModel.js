@@ -41,9 +41,8 @@ module.exports = (sequelize,DataTypes,Sequelize)=>{
       account_updated: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
-        allowNull: false,
-        readOnly: true
-      }
+        allowNull: false      
+    }
     } ,{
       freezeTableName: true,
     })
