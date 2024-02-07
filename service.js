@@ -2,10 +2,10 @@
 function checkIfPayloadIsEmpty(req, res) {
     console.log(req.route,req.method);
     if (Object.keys(req.body).length !== 0) {
-        res.status(400).send();
+        return res.status(400).send();
     }
     if (Object.keys(req.query).length > 0) {
-        res.status(400).send();
+        return res.status(400).send();
     }
 }
 
