@@ -4,7 +4,7 @@
   "description": "002294529\r sankhla.t@northeastern\r Tarun Sankhla",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node test.js",
     "lint": ".eslintrc.js",
     "start": "node server.js"
   },
