@@ -82,6 +82,9 @@ function authenticate(req, res, next) {
     }
 }
 
+
+
+
 app.use('/', (req, res, next) => {
     res.header('Cache-Control', 'no-cache');
     next();
