@@ -3,12 +3,9 @@ const bcrypt = require('bcrypt');
 require('dotenv').config();
 const base64 = require('base-64');
 const workFactor = 8;
-const bcrypt = require('bcrypt');
-require('dotenv').config();
-const base64 = require('base-64');
-const workFactor = 8;
 const bodyParser = require('body-parser');
 const { checkIfPayloadIsEmpty } = require('./service');
+const database = require('./Model');
 const database = require('./Model');
 const User = require('./Model').users;
 
