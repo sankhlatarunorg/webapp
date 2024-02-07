@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { checkIfPayloadIsEmpty } = require('./service');
 require('dotenv').config();
+const User = require('./Model').users;
 
 var app = express();
 app.use(bodyParser.json());
