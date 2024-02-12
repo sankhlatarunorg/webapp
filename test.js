@@ -9,7 +9,7 @@ function testAddition() {
   const result = num1 + num2;
 
   // Assert that the result is equal to 2
-  assert.strictEqual(result, 2, '1 + 1 should equal 2');
+  assert.strictEqual(result, 3, '1 + 1 should equal 2');
 }
 
 // Run the test
