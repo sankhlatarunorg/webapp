@@ -38,11 +38,11 @@ async function authenticate(req, res) {
         console.log('authenticating');
         let check = await checkIfDBConnected();
         console.log("checking db connection ");
-        console.log("check:",check);
+        console.log("check:", check);
         if (check == false) {
             return res.status(503).send();
         }
-       
+
 
         const credentials = base64.decode(authHeader.split(' ')[1]);
         const [username, password] = credentials.split(':');
@@ -50,20 +50,27 @@ async function authenticate(req, res) {
         console.log("checking user");
         return User.findOne({ where: { username: username } })
             .then((user) => {
-                console.log("found user: ",user);
+                console.log("found user: ", user);
                 if (!user) {
                     return res.status(401).send();
                 }
-                if (!bcrypt.compare(password, user.password)) {
-                    return res.status(401).send();
-                }
                 req.user = user;
-                console.log("finished checking user");
+                return bcrypt.compare(password, user.password).then((result) => {
+                    console.log("password result:", result);
+                    console.log("finished checking user");
+                    if (!result) {
+                        return res.status(401).send();
+                    }
+                }).catch((e) => {
+                    console.log(e);
+                    return res.status(400).send();
+                });
+
             }).catch((e) => {
                 console.log(e);
                 return res.status(400).send();
             });
-            
+
     } catch (e) {
         console.log(e);
         return res.status(400);
@@ -90,7 +97,7 @@ async function checkIfAuthenticated(req, res) {
             console.log(e);
             return res.status(400).send();
         });
-       
+
     } catch (e) {
         console.log(e);
         return res.status(400).send();
@@ -99,10 +106,10 @@ async function checkIfAuthenticated(req, res) {
 
 app.use((error, req, res, next) => {
     if (error instanceof SyntaxError) {
-      return res.status(400).send();
+        return res.status(400).send();
     }
     next();
-  });
+});
 
 app.use('/', (req, res, next) => {
     res.header('Cache-Control', 'no-cache');
@@ -122,38 +129,9 @@ app.use('/v1/user/self', (req, res, next) => {
     }
     next();
 });
-//     if(['GET','PUT'].indexOf(req.method) !== -1){
-//         console.log("validating auth header");
-//         authenticate(req, res, next)
-//             .then((result)=>{  
-//                 console.log("result:",result?.statusCode); 
-//                 if( [503,401].indexOf(result?.statusCode) !== -1){
-//                     console.log("checking status code");
-//                     return res.status(result.statusCode).send();
-//                 }
-//                 console.log("Finished authenticating");
-//                 next();
-//             }).catch((e)=>{
-//                 console.log(e);
-//                 return res.status(400).send();
-//             });        
-//     }
-//     if(req.method === 'POST'){
-//         checkIfAuthenticated(req, res, next)
-//         .then((result)=>{
-//             if([503,400].indexOf(result?.statusCode) !== -1){
-//                 return res.status(result.statusCode).send();
-//             }
-//             next();
-//         }).catch((e)=>{
-//             console.log(e);
-//             return res.status(400).send();
-//         });
-//     }
-// });
 
 app.get('/v1/user/self', (req, res) => {
-    try{
+    try {
         if (Object.keys(req.body).length !== 0) {
             return res.status(400).send();
         }
@@ -161,30 +139,33 @@ app.get('/v1/user/self', (req, res) => {
             return res.status(400).send();
         }
         return authenticate(req, res)
-        .then((result)=>{  
-            console.log("result:",result?.statusCode); 
-            if( [503,401,400].indexOf(result?.statusCode) !== -1){
-                console.log("checking status code");
-                return res.status(result.statusCode).send();
-            }
-            console.log("Finished authenticating");
-            console.log("get user self");
-            const user = req.user;
-            console.log("response stats code:",res.statusCode);
-            console.log("response headers: ",res.getHeaders());
-            return res.status(200).send({
-                "id": user.id,
-                "first_name": user.first_name,
-                "last_name": user.last_name,
-                "username": user.username,
-                "account_created": user.account_created,
-                "account_updated": user.account_updated
-            })
-        }).catch((e)=>{
-            console.log(e);
-            return res.status(400).send();
-        });        
-    }catch(e){
+            .then((result) => {
+                console.log("result:", result);
+                if (result != undefined) {
+                    console.log("result status code:", result?.statusCode);
+                    if ([503, 401, 400].indexOf(result?.statusCode) !== -1) {
+                        console.log("checking status code");
+                        return res.status(result.statusCode).send();
+                    }
+                }
+                console.log("Finished authenticating");
+                console.log("get user self");
+                const user = req.user;
+                console.log("response stats code:", res.statusCode);
+                console.log("response headers: ", res.getHeaders());
+                return res.status(200).send({
+                    "id": user.id,
+                    "first_name": user.first_name,
+                    "last_name": user.last_name,
+                    "username": user.username,
+                    "account_created": user.account_created,
+                    "account_updated": user.account_updated
+                })
+            }).catch((e) => {
+                console.log(e);
+                return res.status(400).send();
+            });
+    } catch (e) {
         console.log(e);
         return res.status(400).send();
     }
@@ -192,25 +173,27 @@ app.get('/v1/user/self', (req, res) => {
 
 app.put('/v1/user/self', async (req, res, next) => {
     try {
-        // check it request is in correct format of json
-        // if(!JSON.parse(req.body)){
-        //     return res.status(400).send();
-        // }
-        const allowedParameters = ['first_name', 'last_name', 'password', 'username'];
+        const allowedParameters = ['first_name', 'last_name', 'password'];
         const receivedParameters = Object.keys(req.body);
         const invalidParameters = receivedParameters.filter(param => !allowedParameters.includes(param));
         if (invalidParameters.length > 0) {
             return res.status(400).send();
         }
         return authenticate(req, res, next)
-            .then((result)=>{  
-                console.log("result:",result?.statusCode); 
-                if( [503,401,400].indexOf(result?.statusCode) !== -1){
-                    console.log("checking status code");
-                    return res.status(result.statusCode).send();
+            .then((result) => {
+                console.log("result:", result);
+                if (result != undefined) {
+                    console.log("result status code:", result?.statusCode);
+                    if ([503, 401, 400].indexOf(result?.statusCode) !== -1) {
+                        console.log("checking status code");
+                        return res.status(result.statusCode).send();
+                    }
                 }
                 console.log("Finished authenticating");
-                if (req.body.first_name === undefined || req.body.last_name === undefined || req.body.password === undefined || req.body.username === undefined) {
+                if (req.body.first_name === undefined || req.body.last_name === undefined || req.body.password === undefined) {
+                    return res.status(400).send();
+                }
+                if (req.body.username !== undefined) {
                     return res.status(400).send();
                 }
                 return returnPasswordHash(req.body.password).then((passwordHash) => {
@@ -218,13 +201,13 @@ app.put('/v1/user/self', async (req, res, next) => {
                         first_name: req.body.first_name,
                         last_name: req.body.last_name,
                         password: passwordHash,
-                        username: req.body.username
+                        username: req.user.username
                     }, {
                         where: {
                             id: req.user.id
                         }
                     }).then(() => {
-                    return res.status(200).send()
+                        return res.status(200).send()
                     }).catch((e) => {
                         console.log(e);
                         return res.status(400).send();
@@ -234,10 +217,10 @@ app.put('/v1/user/self', async (req, res, next) => {
                     console.log(e);
                     return res.status(400).send();
                 });
-            }).catch((e)=>{
+            }).catch((e) => {
                 console.log(e);
                 return res.status(400).send();
-            });        
+            });
     } catch (e) {
         console.log(e);
         return res.status(400).send();
@@ -253,50 +236,61 @@ app.post('/v1/user/self', (req, res) => {
             return res.status(400).send();
         }
         return checkIfAuthenticated(req, res)
-        .then((result)=>{
-            if([503,400].indexOf(result?.statusCode) !== -1){
-                return res.status(result.statusCode).send();
-            }
-            console.log("post user self");
-            if (req.body.first_name === undefined || req.body.last_name === undefined || req.body.password === undefined || req.body.username === undefined) {
-                return res.status(400).send();
-            }
-            return User.findOne({
-                where: {
-                    username: req.body.username,
-                },
-            }).then((username) => {
-                console.log(username);
-                if (username !== null) {
-                    return res.status(409).send();
-                } 
-                return returnPasswordHash(req.body.password).then((passwordHash) => {
-                    return User.create({
-                        first_name: req.body.first_name,
-                        last_name: req.body.last_name,
-                        password: passwordHash,
-                        username: req.body.username
-                    }).then(() => {
-                        return res.status(201).send();
+            .then((result) => {
+                if ([503, 400].indexOf(result?.statusCode) !== -1) {
+                    return res.status(result.statusCode).send();
+                }
+                console.log("post user self");
+                if (req.body.first_name === undefined || req.body.last_name === undefined || req.body.password === undefined || req.body.username === undefined) {
+                    return res.status(400).send();
+                }
+                return User.findOne({
+                    where: {
+                        username: req.body.username,
+                    },
+                }).then((username) => {
+                    console.log(username);
+                    if (username !== null) {
+                        return res.status(409).send();
+                    }
+                    return returnPasswordHash(req.body.password).then((passwordHash) => {
+                        return User.create({
+                            first_name: req.body.first_name,
+                            last_name: req.body.last_name,
+                            password: passwordHash,
+                            username: req.body.username
+                        }).then(() => {
+                            return User.findOne({
+                                where: {
+                                    username: req.body.username,
+                                },
+                            }).then((user) => {
+                                return res.status(201).json({
+                                    "id": user.id,
+                                    "first_name": user.first_name,
+                                    "last_name": user.last_name,
+                                    "username": user.username,
+                                    "account_created": user.account_created,
+                                    "account_updated": user.account_updated
+                                });
+                            });
+                        }).catch((e) => {
+                            console.log(e);
+                            return res.status(400).send();
+                        });;
                     }).catch((e) => {
                         console.log(e);
                         return res.status(400).send();
-                    });;
+                    });
                 }).catch((e) => {
                     console.log(e);
                     return res.status(400).send();
                 });
+
             }).catch((e) => {
                 console.log(e);
                 return res.status(400).send();
             });
-    
-        }).catch((e)=>{
-            console.log(e);
-            return res.status(400).send();
-        });
-      
-      
     } catch (e) {
         console.log(e);
         return res.status(400).send();
