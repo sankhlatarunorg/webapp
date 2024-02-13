@@ -19,3 +19,5 @@ Steps:
 4) check for different endpoint and different REST method
 5) check for payload
 6) update test to fail the workflow
+7) node version 18
+8) postgreSQL version 16
