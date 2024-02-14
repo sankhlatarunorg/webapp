@@ -40,10 +40,7 @@ jobs:
 
       - name: Run Hello world
         run: echo "Hello World"
-      
-      - name: Run NPM Start
-        run: npm run start
-
+ 
       - name: Run tests
         env:
           DB_HOST:     ${{ secrets.DB_HOST }}
@@ -51,4 +48,4 @@ jobs:
           DB_USER:     ${{ secrets.DB_USER }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_NAME:     ${{ secrets.DB_NAME }}
-        run: npm run test
+        run: npm start & sleep 8 && npm test
