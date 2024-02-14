@@ -21,11 +21,18 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - name: Start PostgreSQL
+        env:
+          POSTGRES_USER: runner
         run: |
           sudo systemctl start postgresql.service
           pg_isready
           sudo -u postgres createuser -s -d -r -w runner
-  
+          psql
+          \password ${{ secrets.DB_USER }}
+          \q
+          exit
+          sudo systemctl restart postgresql.service
+
 
       - name: Install NPM dependencies
         run: npm ci
