@@ -23,8 +23,6 @@ jobs:
       - name: Start PostgreSQL
         run: |
           sudo systemctl start postgresql.service
-          pg_isready
-          psql -c "CREATE USER postgres WITH PASSWORD 'root';"
 
       - name: Install NPM dependencies
         run: npm ci
