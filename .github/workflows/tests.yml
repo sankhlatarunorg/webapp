@@ -41,9 +41,6 @@ jobs:
       - name: Run Hello world
         run: echo "Hello World"
       
-      - name: Run NPM Build
-        run: npm run build
-
       - name: Run NPM Start
         run: npm run start
 
