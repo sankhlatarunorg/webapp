@@ -41,6 +41,9 @@ jobs:
       - name: Run Hello world
         run: echo "Hello World"
  
+      - name: Checking if environment variables are set
+        run: echo $DB_HOST $DB_PORT $DB_USER $DB_PASSWORD $DB_NAME $DB_DIALECT
+
       - name: Run tests
         env:
           DB_HOST:     ${{ secrets.DB_HOST }}
@@ -48,4 +51,5 @@ jobs:
           DB_USER:     ${{ secrets.DB_USER }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_NAME:     ${{ secrets.DB_NAME }}
+          DB_DIALECT : ${{ secrets.DB_DIALECT }}
         run: npm start & sleep 8 && npm test
