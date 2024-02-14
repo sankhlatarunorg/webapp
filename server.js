@@ -203,7 +203,7 @@ app.put('/v1/user/self', async (req, res, next) => {
                             id: req.user.id
                         }
                     }).then(() => {
-                        return res.status(200).send()
+                        return res.status(204).send()
                     }).catch((e) => {
                         console.log(e);
                         return res.status(400).send();
@@ -329,3 +329,6 @@ app.use('/', (req, res) => {
 app.listen(3000, function () {
     console.log('Health Check Application listening on port 3000!');
 });
+
+
+// module.exports = server
