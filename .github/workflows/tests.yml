@@ -35,12 +35,18 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
-      - name: Install dependencies
+      - name: Install NPM dependencies
         run: npm install
 
       - name: Run Hello world
         run: echo "Hello World"
       
+      - name: Run NPM Build
+        run: npm run build
+
+      - name: Run NPM Start
+        run: npm run start
+
       - name: Run tests
         env:
           DB_HOST:     ${{ secrets.DB_HOST }}
