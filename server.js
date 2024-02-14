@@ -173,7 +173,7 @@ app.get('/v1/user/self', (req, res) => {
 
 app.put('/v1/user/self', async (req, res, next) => {
     try {
-        const allowedParameters = ['first_name', 'last_name', 'password'];
+        const allowedParameters = ['first_name', 'last_name', 'password', 'username'];
         const receivedParameters = Object.keys(req.body);
         const invalidParameters = receivedParameters.filter(param => !allowedParameters.includes(param));
         if (invalidParameters.length > 0) {
@@ -190,18 +190,14 @@ app.put('/v1/user/self', async (req, res, next) => {
                     }
                 }
                 console.log("Finished authenticating");
-                if (req.body.first_name === undefined || req.body.last_name === undefined || req.body.password === undefined) {
-                    return res.status(400).send();
-                }
-                if (req.body.username !== undefined) {
+                if (req.body.first_name === undefined || req.body.last_name === undefined || req.body.password === undefined || req.body.username === undefined) {
                     return res.status(400).send();
                 }
                 return returnPasswordHash(req.body.password).then((passwordHash) => {
                     return User.update({
                         first_name: req.body.first_name,
                         last_name: req.body.last_name,
-                        password: passwordHash,
-                        username: req.user.username
+                        password: passwordHash                    
                     }, {
                         where: {
                             id: req.user.id
