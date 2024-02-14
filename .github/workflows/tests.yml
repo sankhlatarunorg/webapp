@@ -11,20 +11,6 @@ jobs:
     strategy:
         matrix:
           node-version: [18.x]
-    services:
-      postgres:
-        image: postgres:latest
-        env:
-          POSTGRES_DB: ${{ secrets.DB_NAME }}
-          POSTGRES_USER: ${{ secrets.DB_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        ports:
-          - 5432:5432
-        options: 
-          --health-cmd pg_isready 
-          --health-interval 10s 
-          --health-timeout 5s 
-          --health-retries 5
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -34,6 +20,12 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
+      - name: Start PostgreSQL
+        run: |
+          sudo systemctl start postgresql.service
+          pg_isready
+          sudo -u postgres createuser -s -d -r -w runner
+  
 
       - name: Install NPM dependencies
         run: npm ci
