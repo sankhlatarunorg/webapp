@@ -15,7 +15,7 @@ describe(' Api Integration Test', function () {
     account_created: '',
     account_updated: ''
   };
-  it('Create User using Post API', async function () {
+  it('Create User Test', async function () {
     const userData = {
       username: faker.internet.email(),
       password: faker.internet.password(),
@@ -23,7 +23,13 @@ describe(' Api Integration Test', function () {
       last_name: 'Sankhla'
     }
     console.log(userData);
-    const response = await api.post('/v1/user/self').send(userData);
+
+    const healthz = await api.get('/healthz');
+    console.log(healthz.status);
+    console.log(healthz.body);
+
+    expect(healthz.status).to.equal(200);
+    let response = await api.post('/v1/user/self').send(userData);
     console.log(response.status);
     console.log(response.body);
 
@@ -41,10 +47,8 @@ describe(' Api Integration Test', function () {
     userCredsData.id = response.body.id;
     userCredsData.account_created = response.body.account_created;
     userCredsData.account_updated = response.body.account_updated;
-  });
-
-  it('Get User using Api', async function () {
-    const response = await api.get('/v1/user/self').auth(userCredsData.username, userCredsData.password);
+ 
+    response = await api.get('/v1/user/self').auth(userCredsData.username, userCredsData.password);
     console.log(response.status);
     console.log(response.body);
     expect(response.status).to.equal(200);
@@ -63,9 +67,9 @@ describe(' Api Integration Test', function () {
   });
 
 
-  it('Update the User', async function () {
+  it('Update the User Test', async function () {
     userCredsData.first_name += 'Updated';
-    const response = await api.put('/v1/user/self')
+    let response = await api.put('/v1/user/self')
       .auth(userCredsData.username, userCredsData.password)
       .send({ 
         first_name: userCredsData.first_name, 
@@ -75,10 +79,8 @@ describe(' Api Integration Test', function () {
     console.log(response.status); 
     console.log(response.body); 
     expect(response.status).to.equal(204);
-  });
 
-  it('Get User using Api', async function () {
-    const response = await api.get('/v1/user/self').auth(userCredsData.username, userCredsData.password);
+    response = await api.get('/v1/user/self').auth(userCredsData.username, userCredsData.password);
     console.log(response.status);
     console.log(response.body);
     expect(response.status).to.equal(200);
