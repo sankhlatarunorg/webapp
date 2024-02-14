@@ -1,19 +1,10 @@
 const assert = require('assert');
 
-function testAddition() {
-  // Define the values
+function unitTestAddition() {
   const num1 = 1;
   const num2 = 1;
-
-  // Perform the addition
   const result = num1 + num2;
-
-  // Assert that the result is equal to 2
-  assert.strictEqual(result, 3, '1 + 1 should equal 2');
+  assert.strictEqual(result, 2, '1 + 1 should equal 2');
 }
 
-// Run the test
-testAddition();
-
-
-expect(redHex).to.equal("ff0000");
+unitTestAddition();
