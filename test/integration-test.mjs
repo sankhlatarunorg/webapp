@@ -1,14 +1,9 @@
 const chai = await import('chai');
 const expect = chai.expect;
-// const supertest = await import('supertest');
-// const faker = await import('faker');
 import supertest from 'supertest';
 import { faker } from '@faker-js/faker';
-import { use } from 'chai';
 
 const api = supertest('http://localhost:3000');
-
-
 
 describe(' Api Integration Test', function () {
   let userCredsData = {
