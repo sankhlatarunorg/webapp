@@ -31,7 +31,7 @@ jobs:
         run: echo "Hello World"
  
       - name: Checking if environment variables are set
-        run: echo $DB_HOST $DB_PORT $DB_USER $DB_PASSWORD $DB_NAME $DB_DIALECT
+        run: echo  ${{ secrets.DB_HOST }} ${{ secrets.DB_PORT}} ${{secrets.DB_USER}} ${{secrets.DB_PASSWORD}} ${{secrets.DB_NAME}} ${{secrets.DB_DIALECT}}
 
       - name: Run tests
         env:
