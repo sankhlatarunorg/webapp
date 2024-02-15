@@ -25,7 +25,8 @@ jobs:
           sudo systemctl start postgresql.service
           sudo systemctl status postgresql.service
           pg_isready
-          sudo -u postgres createuser -s -d -r -w runner
+          # sudo -u postgres createuser -s -d -r -w runner
+          sudo su - postgres -c "psql --echo-all -U postgres -d postgres --command \"alter user postgres with password 'postgres';\""
       # - name: Run shell script
       #   run: |
       #     update_postgres_auth.sh
@@ -44,7 +45,7 @@ jobs:
           DB_HOST:     ${{ secrets.DB_HOST }}
           DB_PORT:     ${{ secrets.DB_PORT }}
           DB_USER:     ${{ secrets.DB_USER }}
-          DB_PASSWORD: "''"
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_NAME:     ${{ secrets.DB_NAME }}
           DB_DIALECT : ${{ secrets.DB_DIALECT }}
         run: npm start & sleep 8 && npm test
