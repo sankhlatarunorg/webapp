@@ -27,6 +27,8 @@ jobs:
           pg_isready
           # sudo -u postgres createuser -s -d -r -w runner
           sudo su - postgres -c "psql --echo-all -U postgres -d postgres --command \"alter user postgres with password 'postgres';\""
+          sudo service postgresql restart
+          echo "*** DONE"
       # - name: Run shell script
       #   run: |
       #     update_postgres_auth.sh
