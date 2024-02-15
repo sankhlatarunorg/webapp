@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set the path to your pg_hba.conf file
-PG_HBA_CONF="/path/to/pg_hba.conf"
+PG_HBA_CONF="/var/lib/pgsql/data/pg_hba.conf"
 
 # Change the authentication method to "md5" for password authentication
 sed -i 's/ident/md5/g' $PG_HBA_CONF
