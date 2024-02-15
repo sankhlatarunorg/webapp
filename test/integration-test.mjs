@@ -25,6 +25,7 @@ describe(' Api Integration Test', function () {
     console.log(userData);
 
     const healthz = await api.get('/healthz');
+    console.log("successfully ran health check");
     console.log(healthz.status);
     console.log(healthz.body);
 
