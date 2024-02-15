@@ -1,22 +1,9 @@
-// const assert = require('assert');
-
-// function unitTestAddition() {
-//   const num1 = 1;
-//   const num2 = 1;
-//   const result = num1 + num2;
-//   assert.strictEqual(result, 2, '1 + 1 should equal 2');
-// }
-
-// unitTestAddition();
-
-
-const request = ('supertest');
-const supertest = require('supertest');
+// const request = ('supertest');
 // const app = require('../app');
-// import supertest from "supertest";
+import supertest from "supertest";
 const api = supertest("http://localhost:3000");
-// import { faker } from "@faker-js/faker";
-const faker = require('faker');
+import { faker } from "@faker-js/faker";
+// const faker = require('faker');
 
 describe('Healthz check endpoint', () => {
     test('should return 200 Status when database is connected', async() => {
