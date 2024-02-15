@@ -309,7 +309,8 @@ app.get('/healthz', function (req, res) {
                 await User.sync({ force: true });
                 // Table created
                 const users = await User.findAll();
-                // console.log(users);
+                console.log("Users:")
+                console.log(users);
 
             })();
             console.log('Connection has been established successfully.');
