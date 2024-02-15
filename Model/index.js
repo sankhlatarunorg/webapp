@@ -22,6 +22,7 @@ sequelize.authenticate().then(() => {
 const database = {}
 database.Sequelize = Sequelize
 database.sequelize = sequelize
+database.DataTypes = DataTypes
 
 //connecting to model
 database.users = require('./userModel') (sequelize, DataTypes,Sequelize)
