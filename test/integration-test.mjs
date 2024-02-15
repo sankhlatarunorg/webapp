@@ -70,14 +70,14 @@ describe(" Api Integration Test", function () {
             // }
 
             // const healthz = await api.get('/healthz');
-            console.log("successfully ran health check");
+            // console.log("successfully ran health check");
             // console.log(healthz.status);
             // console.log(healthz.body);
 
             // expect(healthz.status).to.equal(200);
             let response = await api.post("/v1/user/self").send(userData);
-            console.log(response.status);
-            console.log(response.body);
+            // console.log(response.status);
+            // console.log(response.body);
 
             expect(response.status).to.equal(201);
             expect(response.body).to.have.property("username");
@@ -97,8 +97,8 @@ describe(" Api Integration Test", function () {
             response = await api
                 .get("/v1/user/self")
                 .auth(userCredsData.username, userCredsData.password);
-            console.log(response.status);
-            console.log(response.body);
+            // console.log(response.status);
+            // console.log(response.body);
             expect(response.status).to.equal(200);
             expect(response.body).to.have.property("username");
             expect(response.body).to.have.property("first_name");
@@ -135,15 +135,15 @@ describe(" Api Integration Test", function () {
                     password: userCredsData.password,
                     username: userCredsData.username,
                 });
-            console.log(response.status);
-            console.log(response.body);
+            // console.log(response.status);
+            // console.log(response.body);
             expect(response.status).to.equal(204);
 
             response = await api
                 .get("/v1/user/self")
                 .auth(userCredsData.username, userCredsData.password);
-            console.log(response.status);
-            console.log(response.body);
+            // console.log(response.status);
+            // console.log(response.body);
             expect(response.status).to.equal(200);
             expect(response.body).to.have.property("username");
             expect(response.body).to.have.property("first_name");
