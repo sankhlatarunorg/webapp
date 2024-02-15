@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 PG_HBA_CONF="/var/lib/pgsql/data/pg_hba.conf"
 
