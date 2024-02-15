@@ -24,7 +24,8 @@ jobs:
         run: |
           sudo systemctl start postgresql.service
           sudo systemctl status postgresql.service
-          sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'postgres'"
+          sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'postgres';"
+          sudo -u postgres psql -c "CREATE DATABASE postgres;"
 
       - name: Install NPM dependencies
         run: npm ci
