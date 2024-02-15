@@ -26,8 +26,8 @@ jobs:
           sudo systemctl status postgresql.service
       - name: Run shell script
         run: |
-          chmod +x ./update_postgres_auth.sh
-          ./update_postgres_auth.sh
+          chmod +x update_postgres_auth.sh
+          update_postgres_auth.sh
             
       - name: Install NPM dependencies
         run: npm ci
