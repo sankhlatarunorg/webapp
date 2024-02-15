@@ -140,7 +140,6 @@ app.get('/v1/user/self', (req, res) => {
         }
         return authenticate(req, res)
             .then((result) => {
-                console.log("result:", result);
                 if (result != undefined) {
                     console.log("result status code:", result?.statusCode);
                     if ([503, 401, 400].indexOf(result?.statusCode) !== -1) {
@@ -181,7 +180,6 @@ app.put('/v1/user/self', async (req, res, next) => {
         }
         return authenticate(req, res, next)
             .then((result) => {
-                console.log("result:", result);
                 if (result != undefined) {
                     console.log("result status code:", result?.statusCode);
                     if ([503, 401, 400].indexOf(result?.statusCode) !== -1) {
