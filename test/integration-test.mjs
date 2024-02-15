@@ -117,7 +117,7 @@ describe(" Api Integration Test", function() {
       userCredsData.account_updated
     );
     }catch(e){
-      console.log(e);
+    //   console.log(e);
     }
 
   });
@@ -155,7 +155,7 @@ describe(" Api Integration Test", function() {
     expect(response.body.last_name).to.equal(userCredsData.last_name);
     expect(response.body.id).to.equal(userCredsData.id);
 }catch(e){
-    console.log(e);
+    // console.log(e);
 }
   });
    
