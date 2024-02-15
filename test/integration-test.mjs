@@ -2,7 +2,7 @@ const chai = await import('chai');
 const expect = chai.expect;
 import supertest from 'supertest';
 import { faker } from '@faker-js/faker';
-const User = await import('./../Model').users;
+const database = await import('./../Model');
 
 const api = supertest('http://localhost:3000');
 
@@ -25,6 +25,7 @@ describe(' Api Integration Test', function () {
     }
     console.log(userData);
     console.log('starting the sync');
+    const User = database.users;
     (async () => {
       await User.sync({ force: true });
       // Table created
