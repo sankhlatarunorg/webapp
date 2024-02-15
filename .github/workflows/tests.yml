@@ -25,8 +25,8 @@ jobs:
           sudo systemctl start postgresql.service
           sudo systemctl status postgresql.service
           pg_isready
-          sudo su - postgres -c "psql --echo-all -U postgres -d postgres --command \"CREATE DATABASE postgres;\""
           sudo su - postgres -c "psql --echo-all -U postgres -d prod --command \"ALTER USER postgres WITH PASSWORD 'postgres';\""
+          
           sudo service postgresql restart
           echo "*** DONE"
       #           sudo su - postgres -c "psql --echo-all -U postgres -d postgres --command \"alter user postgres with password 'postgres';\""
