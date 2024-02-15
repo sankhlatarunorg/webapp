@@ -16,6 +16,17 @@ describe(' Api Integration Test', function () {
     account_created: '',
     account_updated: ''
   };
+  console.log('starting the sync');
+  const User = database.users;
+  (async () => {
+    await User.sync({ force: true });
+    // Table created
+    const users = await User.findAll();
+    console.log("Users:")
+    console.log(users);
+
+  })();
+  console.log('ending the sync');
   it('Create User Test', async function () {
     const userData = {
       username: faker.internet.email(),
@@ -24,17 +35,7 @@ describe(' Api Integration Test', function () {
       last_name: 'Sankhla'
     }
     console.log(userData);
-    console.log('starting the sync');
-    // const User = database.users;
-    // (async () => {
-    //   await User.sync({ force: true });
-    //   // Table created
-    //   const users = await User.findAll();
-    //   console.log("Users:")
-    //   console.log(users);
 
-    // })();
-    console.log('ending the sync');
 
     // const healthz = await api.get('/healthz');
     console.log("successfully ran health check");
