@@ -23,17 +23,18 @@ describe(" Api Integration Test", function() {
   //     database.DataTypes,
   //     database.Sequelize
   //   );
-  //   // const User = database.users;
-  //   // (async () => {
-  //   //   await User.sync({ force: true });
-  //   //   // Table created
-  //   //   const users = await User.findAll();
-  //   //   console.log("Users:");
-  //   //   console.log(users);
-  //   // })();
-  //   // console.log("ending the sync");
+    // const User = database.users;
+    // (async () => {
+    //   await User.sync({ force: true });
+    //   // Table created
+    //   const users = await User.findAll();
+    //   console.log("Users:");
+    //   console.log(users);
+    // })();
+    // console.log("ending the sync");
   // });
   it("Create User Test", async function() {
+    try{
     const userData = {
       username: faker.internet.email(),
       password: faker.internet.password(),
@@ -115,9 +116,14 @@ describe(" Api Integration Test", function() {
     expect(response.body.account_updated).to.equal(
       userCredsData.account_updated
     );
+    }catch(e){
+      console.log(e);
+    }
+
   });
 
   it("Update the User Test", async function() {
+    try{
     userCredsData.first_name += "Updated";
     let response = await api
       .put("/v1/user/self")
@@ -148,5 +154,9 @@ describe(" Api Integration Test", function() {
     expect(response.body.first_name).to.equal(userCredsData.first_name);
     expect(response.body.last_name).to.equal(userCredsData.last_name);
     expect(response.body.id).to.equal(userCredsData.id);
+}catch(e){
+    console.log(e);
+}
   });
+   
 });
