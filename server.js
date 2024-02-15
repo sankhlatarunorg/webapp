@@ -21,24 +21,24 @@ async function checkIfDBConnected() {
         await database.sequelize.authenticate();
         return true;
     } catch (e) {
-        console.log("database not connected error:", e);
+        // console.log("database not connected error:", e);
         return false;
     }
 }
 
 async function authenticate(req, res) {
     try {
-        console.log("checking auth header");
+        // console.log("checking auth header");
         const authHeader = req.headers.authorization;
 
         if (!authHeader) {
             return res.status(400).send();
         }
 
-        console.log('authenticating');
+        // console.log('authenticating');
         let check = await checkIfDBConnected();
-        console.log("checking db connection ");
-        console.log("check:", check);
+        // console.log("checking db connection ");
+        // console.log("check:", check);
         if (check == false) {
             return res.status(503).send();
         }
@@ -46,33 +46,33 @@ async function authenticate(req, res) {
 
         const credentials = base64.decode(authHeader.split(' ')[1]);
         const [username, password] = credentials.split(':');
-        console.log(username, password);
-        console.log("checking user");
+        // console.log(username, password);
+        // console.log("checking user");
         return User.findOne({ where: { username: username } })
             .then((user) => {
-                console.log("found user: ", user);
+                // console.log("found user: ", user);
                 if (!user) {
                     return res.status(401).send();
                 }
                 req.user = user;
                 return bcrypt.compare(password, user.password).then((result) => {
-                    console.log("password result:", result);
-                    console.log("finished checking user");
+                    // console.log("password result:", result);
+                    // console.log("finished checking user");
                     if (!result) {
                         return res.status(401).send();
                     }
                 }).catch((e) => {
-                    console.log(e);
+                    // console.log(e);
                     return res.status(400).send();
                 });
 
             }).catch((e) => {
-                console.log(e);
+                // console.log(e);
                 return res.status(400).send();
             });
 
     } catch (e) {
-        console.log(e);
+        // console.log(e);
         return res.status(400);
     }
 }
@@ -85,7 +85,7 @@ function checkIfHeaderIsPresent(req, res) {
 
 async function checkIfAuthenticated(req, res) {
     try {
-        console.log('checking if authenticated');
+        // console.log('checking if authenticated');
         if (req.headers.authorization !== undefined) {
             return res.status(400).send();
         }
@@ -94,12 +94,12 @@ async function checkIfAuthenticated(req, res) {
                 return res.status(503).send();
             }
         }).catch((e) => {
-            console.log(e);
+            // console.log(e);
             return res.status(400).send();
         });
 
     } catch (e) {
-        console.log(e);
+        // console.log(e);
         return res.status(400).send();
     }
 }
@@ -141,17 +141,17 @@ app.get('/v1/user/self', (req, res) => {
         return authenticate(req, res)
             .then((result) => {
                 if (result != undefined) {
-                    console.log("result status code:", result?.statusCode);
+                    // console.log("result status code:", result?.statusCode);
                     if ([503, 401, 400].indexOf(result?.statusCode) !== -1) {
-                        console.log("checking status code");
+                        // console.log("checking status code");
                         return res.status(result.statusCode).send();
                     }
                 }
-                console.log("Finished authenticating");
-                console.log("get user self");
+                // console.log("Finished authenticating");
+                // console.log("get user self");
                 const user = req.user;
-                console.log("response stats code:", res.statusCode);
-                console.log("response headers: ", res.getHeaders());
+                // console.log("response stats code:", res.statusCode);
+                // console.log("response headers: ", res.getHeaders());
                 return res.status(200).send({
                     "id": user.id,
                     "first_name": user.first_name,
@@ -161,11 +161,11 @@ app.get('/v1/user/self', (req, res) => {
                     "account_updated": user.account_updated
                 })
             }).catch((e) => {
-                console.log(e);
+                // console.log(e);
                 return res.status(400).send();
             });
     } catch (e) {
-        console.log(e);
+        // console.log(e);
         return res.status(400).send();
     }
 });
@@ -181,13 +181,13 @@ app.put('/v1/user/self', async (req, res, next) => {
         return authenticate(req, res, next)
             .then((result) => {
                 if (result != undefined) {
-                    console.log("result status code:", result?.statusCode);
+                    // console.log("result status code:", result?.statusCode);
                     if ([503, 401, 400].indexOf(result?.statusCode) !== -1) {
-                        console.log("checking status code");
+                        // console.log("checking status code");
                         return res.status(result.statusCode).send();
                     }
                 }
-                console.log("Finished authenticating");
+                // console.log("Finished authenticating");
                 if (req.body.first_name === undefined || req.body.last_name === undefined || req.body.password === undefined || req.body.username === undefined) {
                     return res.status(400).send();
                 }
@@ -203,20 +203,20 @@ app.put('/v1/user/self', async (req, res, next) => {
                     }).then(() => {
                         return res.status(204).send()
                     }).catch((e) => {
-                        console.log(e);
+                        // console.log(e);
                         return res.status(400).send();
                     });
                 }
                 ).catch((e) => {
-                    console.log(e);
+               // console.log(e);
                     return res.status(400).send();
                 });
             }).catch((e) => {
-                console.log(e);
+           // console.log(e);
                 return res.status(400).send();
             });
     } catch (e) {
-        console.log(e);
+   // console.log(e);
         return res.status(400).send();
     }
 });
@@ -234,7 +234,7 @@ app.post('/v1/user/self', (req, res) => {
                 if ([503, 400].indexOf(result?.statusCode) !== -1) {
                     return res.status(result.statusCode).send();
                 }
-                console.log("post user self");
+                // console.log("post user self");
                 if (req.body.first_name === undefined || req.body.last_name === undefined || req.body.password === undefined || req.body.username === undefined) {
                     return res.status(400).send();
                 }
@@ -243,7 +243,7 @@ app.post('/v1/user/self', (req, res) => {
                         username: req.body.username,
                     },
                 }).then((username) => {
-                    console.log(username);
+                    // console.log(username);
                     if (username !== null) {
                         return res.status(409).send();
                     }
@@ -269,24 +269,24 @@ app.post('/v1/user/self', (req, res) => {
                                 });
                             });
                         }).catch((e) => {
-                            console.log(e);
+                            // console.log(e);
                             return res.status(400).send();
                         });;
                     }).catch((e) => {
-                        console.log(e);
+                        // console.log(e);
                         return res.status(400).send();
                     });
                 }).catch((e) => {
-                    console.log(e);
+                    // console.log(e);
                     return res.status(400).send();
                 });
 
             }).catch((e) => {
-                console.log(e);
+                // console.log(e);
                 return res.status(400).send();
             });
     } catch (e) {
-        console.log(e);
+        // console.log(e);
         return res.status(400).send();
     }
 });
@@ -307,26 +307,26 @@ app.get('/healthz', function (req, res) {
                 await User.sync({ force: true });
                 // Table created
                 const users = await User.findAll();
-                console.log("Users:")
-                console.log(users);
+                // console.log("Users:")
+                // console.log(users);
 
             })();
-            console.log('Connection has been established successfully.');
+            // console.log('Connection has been established successfully.');
             return res.status(200).send();
         } catch (error) {
-            console.error('Unable to connect to the database:', error);
+            // console.error('Unable to connect to the database:', error);
             return res.status(503).send();
         }
     })();
 });
 
 app.use('/', (req, res) => {
-    console.log("404 not found  ");
+    // console.log("404 not found  ");
     return res.status(404).send();
 });
 
 app.listen(3000, function () {
-    console.log('Health Check Application listening on port 3000!');
+    // console.log('Health Check Application listening on port 3000!');
 });
 
 
