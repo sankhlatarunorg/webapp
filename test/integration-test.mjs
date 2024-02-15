@@ -35,21 +35,21 @@ describe(' Api Integration Test', function () {
       last_name: 'Sankhla'
     }
     console.log(userData);
-    try {
-      console.log('Checking database connection...');
-      const sequelize= database.sequelize;
-      const User = database.users;
-      await sequelize.authenticate();
-      const userTableExists = await sequelize.queryInterface.hasTable('User');
+    // try {
+    //   console.log('Checking database connection...');
+    //   const sequelize= database.sequelize;
+    //   const User = database.users;
+    //   await sequelize.authenticate();
+    //   const userTableExists = await sequelize.queryInterface.hasTable('User');
 
-      if (!userTableExists) {
-        console.error('User table does not exist. Running migrations...');
-        await User.init(sequelize.options); 
-      }
+    //   if (!userTableExists) {
+    //     console.error('User table does not exist. Running migrations...');
+    //     await User.init(sequelize.options); 
+    //   }
 
-    } catch (error) { 
-      console.error('Unable to connect to the database:', error);
-    }
+    // } catch (error) { 
+    //   console.error('Unable to connect to the database:', error);
+    // }
 
     // const healthz = await api.get('/healthz');
     console.log("successfully ran health check");
