@@ -8,7 +8,7 @@ const { checkIfPayloadIsEmpty } = require('./service');
 const database = require('./Model');
 const User = require('./Model').users;
 
-var app = express();
+const app = express();
 app.use(bodyParser.json());
 
 async function returnPasswordHash(password) {
@@ -326,8 +326,8 @@ app.use('/', (req, res) => {
 });
 
 app.listen(3000, function () {
-    // console.log('Health Check Application listening on port 3000!');
+    console.log('Health Check Application listening on port 3000!');
 });
 
 
-// module.exports = server
+module.exports = app;
