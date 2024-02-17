@@ -34,7 +34,7 @@ describe(" Api Integration Test", function () {
     //   console.log("Users:");
     //   console.log(users);
     // })();
-    // console.log("ending the sync");
+    console.log("ending the sync");
     // });
     it("Create User Test", async function () {
         // try {
@@ -72,15 +72,15 @@ describe(" Api Integration Test", function () {
             //   console.error('Unable to connect to the database:', error);
             // }
 
-            // const healthz = await api.get('/healthz');
-            // console.log("successfully ran health check");
+            // const healthz = await request(app).get('/healthz');
+            console.log("successfully ran health check");
             // console.log(healthz.status);
             // console.log(healthz.body);
 
             // expect(healthz.status).to.equal(200);
             let response = await request(app).post("/v1/user/self").send(userData);
-            // console.log(response.status);
-            // console.log(response.body);
+            console.log(response.status);
+            console.log(response.body);
 
             expect(response.status).to.equal(201);
             expect(response.body).to.have.property("username");
@@ -99,8 +99,8 @@ describe(" Api Integration Test", function () {
 
             response = await request(app).get("/v1/user/self")
                 .auth(userCredsData.username, userCredsData.password);
-            // console.log(response.status);
-            // console.log(response.body);
+            console.log(response.status);
+            console.log(response.body);
             expect(response.status).to.equal(200);
             expect(response.body).to.have.property("username");
             expect(response.body).to.have.property("first_name");
@@ -136,15 +136,15 @@ describe(" Api Integration Test", function () {
                     password: userCredsData.password,
                     username: userCredsData.username,
                 });
-            // console.log(response.status);
-            // console.log(response.body);
+            console.log(response.status);
+            console.log(response.body);
             expect(response.status).to.equal(204);
 
             response = await request(app)
                 .get("/v1/user/self")
                 .auth(userCredsData.username, userCredsData.password);
-            // console.log(response.status);
-            // console.log(response.body);
+            console.log(response.status);
+            console.log(response.body);
             expect(response.status).to.equal(200);
             expect(response.body).to.have.property("username");
             expect(response.body).to.have.property("first_name");
@@ -157,7 +157,7 @@ describe(" Api Integration Test", function () {
             expect(response.body.last_name).to.equal(userCredsData.last_name);
             expect(response.body.id).to.equal(userCredsData.id);
         // } catch (e) {
-        //     // console.log(e);
+        //     console.log(e);
         //     return e;
         // }
     });
