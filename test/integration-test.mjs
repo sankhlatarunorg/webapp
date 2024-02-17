@@ -2,10 +2,18 @@ const chai = await import("chai");
 const expect = chai.expect;
 import supertest from "supertest";
 import { faker } from "@faker-js/faker";
+import database from "./../Model/index.js";
 
 const api = supertest("http://localhost:3000");
 
 describe(" Api Integration Test", function () {
+    try {
+        this.beforeAll(async function () {
+            await database.sequelize.sync();
+        });
+    } catch (e) {
+        console.log("before All", e);
+    }
     let userCredsData = {
         username: "",
         password: "",
@@ -81,4 +89,11 @@ describe(" Api Integration Test", function () {
         expect(response.body.last_name).to.equal(userCredsData.last_name);
         expect(response.body.id).to.equal(userCredsData.id);
     });
+    try {
+        this.afterAll(async function () {
+            await database.sequelize.close();
+        });
+    } catch (e) {
+        console.log("after All", e);
+    }
 });
