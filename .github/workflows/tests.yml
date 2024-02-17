@@ -44,7 +44,10 @@ jobs:
  
       - name: Checking if environment variables are set
         run: echo  ${{ secrets.DB_HOST }} ${{ secrets.DB_PORT}} ${{secrets.DB_USER}} ${{secrets.DB_PASSWORD}} ${{secrets.DB_NAME}} ${{secrets.DB_DIALECT}}
-
+      
+      - name: Run Sequelize Migrations with Debug Logging
+        run: |
+          npx sequelize-cli db:migrate --debug
       - name: Run tests
         env:
           DB_HOST:     ${{ secrets.DB_HOST }}
