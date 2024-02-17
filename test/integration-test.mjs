@@ -24,6 +24,8 @@ describe(" Api Integration Test", function () {
             last_name: "Sankhla",
         };;
         let response = await api.post("/v1/user/self").send(userData);
+        console.log(response.body);
+        console.log(response.status);
         expect(response.status).to.equal(201);
         expect(response.body).to.have.property("username");
         expect(response.body).to.have.property("first_name");
@@ -40,6 +42,8 @@ describe(" Api Integration Test", function () {
         userCredsData.account_updated = response.body.account_updated;
 
         response = await api.get("/v1/user/self").auth(userCredsData.username, userCredsData.password);
+        console.log(response.body);
+        console.log(response.status);
         expect(response.status).to.equal(200);
         expect(response.body).to.have.property("username");
         expect(response.body).to.have.property("first_name");
@@ -58,9 +62,13 @@ describe(" Api Integration Test", function () {
     it("Update the User Test", async function () {
         userCredsData.first_name += "Updated";
         let response = await api.put("/v1/user/self").auth(userCredsData.username, userCredsData.password).send({ first_name: userCredsData.first_name, last_name: userCredsData.last_name, password: userCredsData.password, username: userCredsData.username });
+        console.log(response.body);
+        console.log(response.status);
         expect(response.status).to.equal(204);
 
         response = await api.get("/v1/user/self").auth(userCredsData.username, userCredsData.password);
+        console.log(response.body);
+        console.log(response.status);
         expect(response.status).to.equal(200);
         expect(response.body).to.have.property("username");
         expect(response.body).to.have.property("first_name");
