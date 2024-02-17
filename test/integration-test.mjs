@@ -2,6 +2,7 @@ const chai = await import("chai");
 const expect = chai.expect;
 import supertest from "supertest";
 import { faker } from "@faker-js/faker";
+
 const api = supertest("http://localhost:3000");
 
 describe(" Api Integration Test", function () {
