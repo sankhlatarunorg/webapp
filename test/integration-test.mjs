@@ -34,7 +34,7 @@ describe(" Api Integration Test", function () {
         let response = await api.post("/v1/user/self").send(userData);
         console.log(response.body);
         console.log(response.status);
-        expect(response.status).to.equal(200);
+        expect(response.status).to.equal(201);
         expect(response.body).to.have.property("username");
         expect(response.body).to.have.property("first_name");
         expect(response.body).to.have.property("last_name");
