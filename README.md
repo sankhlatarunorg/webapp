@@ -21,3 +21,16 @@ Steps:
 6) update test to fail the workflow
 7) node version 18
 8) postgreSQL version 16
+
+
+commands for packer:
+packer plugins install github.com/hashicorp/googlecompute
+packer init
+packer validate webappImage.json
+packer build webappImage.json
+gcloud projects add-iam-policy-binding csye-6225-tarun-002294529 --member=serviceAccount:image-builder@csye-6225-tarun-002294529.iam.gserviceaccount.com  --role roles/compute.imageUser
+
+gcloud components update
+
+if you want revert
+gcloud components update --version 463.0.0
