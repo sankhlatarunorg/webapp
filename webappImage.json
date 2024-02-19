@@ -1,0 +1,23 @@
+{
+    "builders": [
+        {
+            "type": "googlecompute",
+            "credentials_file": "credentials.json",
+            "project_id": "csye-6225-tarun-002294529",
+            "source_image": "centos-stream-8-v20240110",
+            "ssh_username": "centos",
+            "zone": "us-east1-b"
+        }
+    ],
+    "provisioners":[
+        {
+            "type":"file",
+            "source":"service.log",
+            "destination":"/tmp/service.log"
+        },
+        {
+            "type":"shell",
+            "script" : "install_postgres.sh"
+        }
+    ]
+}
