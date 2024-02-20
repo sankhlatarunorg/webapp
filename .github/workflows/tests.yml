@@ -60,12 +60,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
-      - name: Set up Packer
-        uses: hashicorp/setup-packer@v1.10.1
-      
+  
       - name: Format Packer Template
-        run: packer fmt -check -write=false
+        uses: hashicorp/packer-github-actions@master
+        with:
+          command: fmt
+          target: webappImage.json
+          arguments: " -check -write=false"
       
   validate_packer_template:
     name: Validate Packer Template
@@ -79,7 +80,7 @@ jobs:
         with:
           command: validate
           target: webappImage.json
-          arguments: "-on-error=abort"
+          arguments: " -on-error=abort"
       
       
   build_custom_image:
