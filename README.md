@@ -34,3 +34,5 @@ gcloud components update
 
 if you want revert
 gcloud components update --version 463.0.0
+
+packer hcl2_upgrade -with-annotations webappImage.json
