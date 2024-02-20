@@ -64,8 +64,7 @@ jobs:
       - name: Format Packer Template
         uses: hashicorp/packer-github-actions@master
         with:
-          command: fmt
-          target: webappImage.json
+          command: fmt webappImage.json.pkr.hcl
           arguments: " -check -write=false"
       
   validate_packer_template:
@@ -78,10 +77,7 @@ jobs:
       - name: Validate Packer
         uses: hashicorp/packer-github-actions@master
         with:
-          command: validate
-          target: webappImage.json
-          arguments: " -on-error=abort"
-      
+          command: validate webappImage.json.pkr.hcl      
       
   build_custom_image:
     name: Build Custom Image
@@ -95,8 +91,7 @@ jobs:
       - name: Set up Packer
         uses: hashicorp/packer-github-actions@master
         with:
-          command: build
-          arguments: "-color=false -on-error=abort"
+          command: build webappImage.json.pkr.hcl
       
       - name: Build Custom Image
         uses: hashicorp/packer-github-actions@master
