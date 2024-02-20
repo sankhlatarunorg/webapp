@@ -11,11 +11,6 @@
     ],
     "provisioners":[
         {
-            "type":"file",
-            "source":"service.log",
-            "destination":"/tmp/service.log"
-        },
-        {
             "type":"shell",
             "script" : "install_postgres.sh"
         }
