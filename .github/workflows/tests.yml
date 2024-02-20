@@ -54,3 +54,43 @@ jobs:
           DB_NAME:     ${{ secrets.DB_NAME }}
           DB_DIALECT : ${{ secrets.DB_DIALECT }}
         run: npm start & sleep 8 && npm test
+  format_packer_template:
+    name: Format Packer Template
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Packer
+        uses: hashicorp/setup-packer@v1.10.1
+      
+      - name: Format Packer Template
+        run: packer fmt -check -write=false
+      
+  validate_packer_template:
+    name: Validate Packer Template
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Packer
+        uses: hashicorp/setup-packer@v1.10.1
+      
+      - name: Validate Packer Template
+        run: packer validate webappImage.json
+      
+  build_custom_image:
+    name: Build Custom Image
+    needs: [validate_packer_template]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.event.head_commit.author.username == github.actor
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Packer
+        uses: hashicorp/setup-packer@v1.10.1
+      
+      - name: Build Custom Image
+        run: packer webappImage.json
