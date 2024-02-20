@@ -11,6 +11,10 @@
     ],
     "provisioners":[
         {
+            "type": "shell",
+            "script": "copy-artifact.sh"
+        },
+        {
             "type":"shell",
             "script" : "install_postgres.sh"
         }
