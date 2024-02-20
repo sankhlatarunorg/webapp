@@ -75,6 +75,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
+      - name: Initialize Packer
+        uses: hashicorp/packer-github-actions@master
+        with:
+          command: init
+          target : webappImage.json.pkr.hcl
+ 
       - name: Validate Packer
         uses: hashicorp/packer-github-actions@master
         with:
