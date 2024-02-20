@@ -12,11 +12,16 @@
     "provisioners":[
         {
             "type": "shell",
-            "script": "copy-artifact.sh"
+            "script": "./scripts/copy-artifact.sh"
+        },
+        {
+            "type":"file",
+            "source":"./artifact/webapp.zip",
+            "destination":"/tmp/webapp/webapp.zip"
         },
         {
             "type":"shell",
-            "script" : "install_postgres.sh"
+            "script" : "./scripts/install_postgres.sh"
         }
     ]
 }
