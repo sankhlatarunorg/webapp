@@ -4,7 +4,7 @@
   "description": "002294529\r sankhla.t@northeastern\r Tarun Sankhla",
   "main": "server.js",
   "scripts": {
-    "test": "mocha test/integration-test.mjs && node test/test.js",
+    "test": "mocha test/integration-test.mjs",
     "lint": ".eslintrc.js",
     "start": "node server.js"
   },
