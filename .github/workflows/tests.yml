@@ -131,7 +131,7 @@ jobs:
     name: Build Custom Image
     needs: [validate_packer_template]
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true || github.event_name == 'push'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
