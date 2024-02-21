@@ -17,3 +17,5 @@ sudo unzip webapp.zip
 cd webapp
 ls
 sudo npm install -y
+ls
+sudo chown -R csye6225:csye6225 ./tmp/webapp/webapp
