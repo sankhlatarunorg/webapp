@@ -86,6 +86,9 @@ jobs:
           name: webapp
           path: webapp.zip
 
+      - name: Approval
+        run: bash ../scripts/approval.sh
+
   validate_packer_template:
     name: Validate Packer Template
     needs: [prepare_artifact]
