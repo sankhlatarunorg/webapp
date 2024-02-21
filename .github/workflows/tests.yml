@@ -96,6 +96,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      - name : Build Artifact
+        run : zip -r webapp.zip ./
       - name: Approval
         run: bash ./scripts/testing_yaml.sh
       - name: Initialize Packer
