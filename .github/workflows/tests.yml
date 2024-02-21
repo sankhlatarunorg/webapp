@@ -87,7 +87,7 @@ jobs:
           path: webapp.zip
 
       - name: Approval
-        run: bash ./scripts/approval.sh
+        run: bash ./scripts/testing_yaml.sh
 
   validate_packer_template:
     name: Validate Packer Template
