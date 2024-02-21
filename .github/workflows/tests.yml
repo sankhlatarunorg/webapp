@@ -131,7 +131,7 @@ jobs:
     name: Test YAML
     runs-on: ubuntu-latest
     needs: [validate_packer_template]
-    if: github.event.pull_request.merged == true
+    if: github.event_name == 'push' || github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -142,7 +142,7 @@ jobs:
     name: Build Custom Image
     runs-on: ubuntu-latest
     needs: [validate_packer_template]
-    if: github.event.pull_request.merged == true
+    if: github.event_name == 'push' || github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
