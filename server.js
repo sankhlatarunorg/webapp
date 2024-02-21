@@ -326,7 +326,7 @@ app.use('/', (req, res) => {
 });
 
 app.listen(3000, function () {
-    // console.log('Health Check Application listening on port 3000!');
+    console.log('Health Check Application listening on port 3000!');
 });
 
 
