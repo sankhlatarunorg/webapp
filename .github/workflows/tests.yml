@@ -140,7 +140,6 @@ jobs:
         run: bash ./scripts/testing_yaml.sh
   build_custom_image:
     name: Build Custom Image
-    needs: [validate_packer_template]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -151,6 +150,10 @@ jobs:
 
       - name: Approval
         run: bash ./scripts/testing_yaml.sh
+      - name: Packer initialize
+        uses: hashicorp/packer-github-actions@master
+        with:
+          command: init
       
       - name: Set up Packer
         uses: hashicorp/packer-github-actions@master
