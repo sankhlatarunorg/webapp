@@ -15,5 +15,5 @@ cd ..
 cd /tmp/webapp
 sudo unzip webapp.zip
 cd webapp
-cd myapp
 ls
+sudo npm install -y
