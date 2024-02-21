@@ -49,7 +49,7 @@ build {
 
   provisioner "file" {
     destination = "/tmp/webapp/webapp.zip"
-    source      = "./artifact/webapp.zip"
+    source      = "webapp.zip"
   }
 
   provisioner "shell" {
