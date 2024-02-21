@@ -114,7 +114,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: webapp
-          path: ./
+          path: ./artifact/
 
   build_custom_image:
     name: Build Custom Image
@@ -124,6 +124,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: create packer hcl
+        uses: hashicorp/packer-github-actions@master
+        with:
+          command: hcl2_upgrade -with-annotations
+          target:  webappImage.json
       
       - name: Set up Packer
         uses: hashicorp/packer-github-actions@master
