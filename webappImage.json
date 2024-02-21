@@ -12,6 +12,12 @@
     "provisioners":[
         {
             "type": "shell",
+            "inline": [
+              "sudo adduser csye6225 --shell /usr/sbin/nologin"
+            ]
+        },
+        {
+            "type": "shell",
             "script": "./scripts/copy-artifact.sh"
         },
         {
@@ -22,6 +28,23 @@
         {
             "type":"shell",
             "script" : "./scripts/install_postgres.sh"
+        },{
+            "type":"shell",
+            "script" : "./scripts/setup_dependencies.sh"
+        },
+        {
+            "type": "file",
+            "source": "systemd-service/csye-6225.service", 
+            "destination": "/tmp/csye-6225.service",
+            "direction": "upload"
+        },
+        {
+            "type": "shell",
+            "inline": [
+                "sudo mv /tmp/csye-6225.service /etc/systemd/system/",
+                "sudo systemctl daemon-reload",
+                "sudo systemctl enable csye-6225"
+            ]
         }
     ]
 }
