@@ -70,25 +70,6 @@ jobs:
           arguments: " -check -write=false"
           target   : webappImage.json.pkr.hcl
       
-  validate_packer_template:
-    name: Validate Packer Template
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
-      - name: Initialize Packer
-        uses: hashicorp/packer-github-actions@master
-        with:
-          command: init
-          target : webappImage.json.pkr.hcl
- 
-      - name: Validate Packer
-        uses: hashicorp/packer-github-actions@master
-        with:
-          command: validate
-          target : webappImage.json.pkr.hcl      
-  
   prepare_artifact:
     name: Prepare Artifact
     runs-on: ubuntu-latest
@@ -104,6 +85,26 @@ jobs:
         with:
           name: webapp
           path: webapp.zip
+
+  validate_packer_template:
+    name: Validate Packer Template
+    needs: [prepare_artifact]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Initialize Packer
+        uses: hashicorp/packer-github-actions@master
+        with:
+          command: init
+          target : webappImage.json.pkr.hcl
+ 
+      - name: Validate Packer
+        uses: hashicorp/packer-github-actions@master
+        with:
+          command: validate
+          target : webappImage.json.pkr.hcl 
   
   download_artifact:
     name: Download Artifact
