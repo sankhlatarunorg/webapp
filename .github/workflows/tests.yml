@@ -151,12 +151,6 @@ jobs:
 
       - name: Approval
         run: bash ./scripts/testing_yaml.sh
-
-      - name: create packer hcl
-        uses: hashicorp/packer-github-actions@master
-        with:
-          command: hcl2_upgrade -with-annotations
-          target:  webappImage.json
       
       - name: Set up Packer
         uses: hashicorp/packer-github-actions@master
