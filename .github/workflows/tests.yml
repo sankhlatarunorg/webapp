@@ -96,12 +96,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+      - name: Approval
+        run: bash ./scripts/testing_yaml.sh
       - name: Initialize Packer
         uses: hashicorp/packer-github-actions@master
         with:
           command: init
           target : webappImage.json.pkr.hcl
+     
  
       - name: Validate Packer
         uses: hashicorp/packer-github-actions@master
