@@ -12,6 +12,8 @@ sudo yum install -y nodejs
 sudo dnf install -y git
 sudo yum -y install zip unzip
 cd ..
+sudo mv /var/lib/pgsql/data/pg_hba.conf /var/lib/pgsql/data/pg_hba.bak
+sudo mv /tmp/webapp/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf
 cd /tmp/webapp
 sudo unzip webapp.zip
 cd webapp
