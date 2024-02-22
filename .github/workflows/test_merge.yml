@@ -96,10 +96,4 @@ jobs:
               command: build 
               target:  webappImage.json.pkr.hcl
           
-          - name: Build Custom Image
-            uses: hashicorp/packer-github-actions@master
-            with:
-              command: build
-              target: webappImage.json
-              arguments: "-on-error=abort"
     
