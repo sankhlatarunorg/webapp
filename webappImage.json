@@ -6,7 +6,8 @@
             "project_id": "csye-6225-tarun-002294529",
             "source_image": "centos-stream-8-v20240110",
             "ssh_username": "centos",
-            "zone": "us-east1-b"
+            "zone": "us-east1-b",
+            "image_name": "csye6225-image-a3"
         }
     ],
     "provisioners":[
@@ -30,7 +31,7 @@
             "script" : "./scripts/install_postgres.sh"
         },{
             "type":"shell",
-            "script" : "./scripts/setup_dependencies.sh"
+            "script" : "./scripts/run_webapp.sh"
         },
         {
             "type": "file",
@@ -42,6 +43,7 @@
             "type": "shell",
             "inline": [
                 "sudo mv /tmp/csye-6225.service /etc/systemd/system/",
+                "sudo systemctl start postgresql",
                 "sudo systemctl daemon-reload",
                 "sudo systemctl enable csye-6225"
             ]
