@@ -29,9 +29,6 @@
         {
             "type":"shell",
             "script" : "./scripts/install_postgres.sh"
-        },{
-            "type":"shell",
-            "script" : "./scripts/run_webapp.sh"
         },
         {
             "type": "file",
