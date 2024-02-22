@@ -57,10 +57,6 @@ build {
     script = "./scripts/install_postgres.sh"
   }
 
-  provisioner "shell" {
-    script = "./scripts/run_webapp.sh"
-  }
-
   provisioner "file" {
     destination = "/tmp/csye-6225.service"
     direction   = "upload"
