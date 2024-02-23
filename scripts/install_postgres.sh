@@ -1,7 +1,6 @@
 #!/bin/bash
 sudo dnf module list postgresql
-sudo dnf -y module enable postgresql:16
-sudo dnf -y install postgresql-server
+sudo yum install -y postgresql-server postgresql-contrib
 sudo postgresql-setup --initdb
 sudo systemctl start postgresql
 sudo systemctl enable postgresql
@@ -13,11 +12,23 @@ sudo dnf install -y git
 sudo yum -y install zip unzip
 cd ..
 # sudo mv /var/lib/pgsql/data/pg_hba.conf /var/lib/pgsql/data/pg_hba.bak
-sudo cp -f /tmp/webapp/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf
+# sudo cp -f /tmp/webapp/webapp/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf
 cd /tmp/webapp
 sudo unzip webapp.zip
 cd webapp
 ls
 sudo npm install -y
 ls
+sudo cp -f /tmp/webapp/webapp/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf
 sudo chown -R csye6225:csye6225 ./
+# sudo postgresql-setup --initdb
+# sudo systemctl start postgresql
+# sudo systemctl enable postgresql
+# sudo rm -rf /var/lib/pgsql/data
+# sudo -i -u postgres
+# pg_ctl initdb
+# exit
+# sudo systemctl status postgresql
+# sudo systemctl stop postgresql
+# sudo systemctl start postgresql
+# sudo systemctl status postgresql

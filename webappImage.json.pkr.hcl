@@ -64,7 +64,7 @@ build {
   }
 
   provisioner "shell" {
-    inline = ["sudo mv /tmp/csye-6225.service /etc/systemd/system/", "sudo systemctl start postgresql", "sudo systemctl daemon-reload", "sudo systemctl enable csye-6225"]
+    inline = ["sudo mv /tmp/csye-6225.service /etc/systemd/system/", "sudo systemctl daemon-reload", "sudo systemctl enable csye-6225"]
   }
 
 }
