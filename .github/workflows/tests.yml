@@ -20,7 +20,8 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      - name: Start PostgreSQL
+
+      - name: Install DB Setup
         env:
           DB_HOST:     ${{ secrets.DB_HOST }}
           DB_PORT:     ${{ secrets.DB_PORT }}
@@ -29,12 +30,13 @@ jobs:
           DB_NAME:     ${{ secrets.DB_NAME }}
           DB_DIALECT : ${{ secrets.DB_DIALECT }}
         run: |
-          sudo systemctl start postgresql.service
-          sudo systemctl status postgresql.service
-          pg_isready
-          sudo su - postgres -c "psql --echo-all -U postgres -d postgres --command \"ALTER USER postgres WITH PASSWORD 'postgres';\""
-          sudo service postgresql restart  
-          echo "*** DONE"
+          sudo apt-get update
+          sudo apt-get install mysql-server
+          sudo apt-get install mysql-client
+          sudo systemctl start mysql
+          sudo systemctl status mysql
+          mysql -u${{secrets.DB_USER}} -p${{secrets.DB_PASSWORD}} -e "CREATE DATABASE IF NOT EXISTS ${{secrets.DB_NAME}};"
+          mysql -u${{ secrets.DB_USER}} -p${{secrets.DB_PASSWORD}} -e "USE ${{secrets.DB_NAME}};"
             
       - name: Install NPM dependencies
         run: npm ci

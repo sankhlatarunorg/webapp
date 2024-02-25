@@ -54,7 +54,7 @@ build {
   }
 
   provisioner "shell" {
-    script = "./scripts/install_postgres.sh"
+    script = "./scripts/install_setup_db_dependencies.sh"
   }
 
   provisioner "file" {
