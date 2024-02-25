@@ -25,18 +25,13 @@ jobs:
         env:
           DB_HOST:     ${{ secrets.DB_HOST }}
           DB_PORT:     ${{ secrets.DB_PORT }}
-          DB_USER:     ${{ secrets.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_NAME:     ${{ secrets.DB_NAME }}
+          DB_USER:     root
+          DB_PASSWORD: root
+          DB_NAME:     user
           DB_DIALECT : ${{ secrets.DB_DIALECT }}
         run: |
-          sudo apt-get update
-          sudo apt-get install mysql-server
-          sudo apt-get install mysql-client
-          sudo systemctl start mysql
-          sudo systemctl status mysql
-          mysql -u${{secrets.DB_USER}} -p${{secrets.DB_PASSWORD}} -e "CREATE DATABASE IF NOT EXISTS ${{secrets.DB_NAME}};"
-          mysql -u${{ secrets.DB_USER}} -p${{secrets.DB_PASSWORD}} -e "USE ${{secrets.DB_NAME}};"
+          sudo /etc/init.d/mysql start
+          mysql -e "CREATE DATABASE IF NOT EXISTS $DB_DATABASE;" -u$DB_USER -p$DB_PASSWORD
             
       - name: Install NPM dependencies
         run: npm ci
