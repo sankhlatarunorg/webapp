@@ -14,7 +14,6 @@ sudo yum -y install zip unzip
 cd ..
 cd /tmp/webapp
 sudo unzip webapp.zip
-cd webapp
 ls
 sudo npm install -y
 ls
