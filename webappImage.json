@@ -7,12 +7,12 @@
             "source_image": "centos-stream-8-v20240110",
             "ssh_username": "centos",
             "zone": "us-east1-b",
-            "image_name": "csye6225-image-a3"
+            "image_name": "csye6225-image-a3-demo"
         }
     ],
     "provisioners":[
-        {
-            "type": "shell"
+        { 
+            "type": "shell",
             "inline": [
               "sudo adduser csye6225 --shell /usr/sbin/nologin"
             ]
