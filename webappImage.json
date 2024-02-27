@@ -9,7 +9,7 @@
             "zone": "us-east1-b",
             "image_name": "csye6225-image-a3"
         }
-    ]
+    ],
     "provisioners":[
         {
             "type": "shell"
