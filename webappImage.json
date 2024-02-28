@@ -1,13 +1,23 @@
 {
+    "variables": {
+        "project_id": "csye6225tarundev",
+        "region": "us-east1",
+        "zone": "us-east1-b",
+        "source_image": "centos-stream-8-v20240110",
+        "image_name": "csye6225-image-a3",
+        "type":"googlecompute",
+        "credentials_file":"credentials.json"
+      },
+    
     "builders": [
         {
             "type": "googlecompute",
-            "credentials_file": "credentials.json",
-            "project_id": "csye-6225-tarun-002294529",
-            "source_image": "centos-stream-8-v20240110",
+            "credentials_file": "{{user `credentials_file`}}",
+            "project_id": "{{user `project_id`}}",
+            "source_image": "{{user `source_image`}}",
             "ssh_username": "centos",
-            "zone": "us-east1-b",
-            "image_name": "csye6225-image-a3"
+            "zone": "{{user `zone`}}",
+            "image_name": "{{user `image_name`}}"
         }
     ],
     "provisioners":[
