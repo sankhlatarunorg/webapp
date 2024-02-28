@@ -21,7 +21,7 @@
         }
     ],
     "provisioners":[
-        {
+        { 
             "type": "shell",
             "inline": [
               "sudo adduser csye6225 --shell /usr/sbin/nologin"
