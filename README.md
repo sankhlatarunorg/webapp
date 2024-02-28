@@ -37,3 +37,7 @@ gcloud components update --version 463.0.0
 
 packer hcl2_upgrade -with-annotations webappImage.json
 packer build webappImage.json.pkr.hcl
+
+
+
+packer validate  -var 'project_id=csye-6225-tarun-002294529' -var 'zone=us-east1-b' -var 'image_name=csye6225-image-a3' -var 'credentials_file=credentials.json' -var 'source_image=centos-stream-8-v20240110' webappImage.json.pkr.hcl
