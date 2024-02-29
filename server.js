@@ -320,6 +320,34 @@ app.get('/healthz', function (req, res) {
     })();
 });
 
+app.get('/sync', function (req, res) {
+    checkIfHeaderIsPresent(req, res);
+    if (Object.keys(req.body).length !== 0) {
+        return res.status(400).send();
+    }
+    if (Object.keys(req.query).length > 0) {
+        return res.status(400).send();
+    }
+    (async () => {
+        try {
+            await database.sequelize.authenticate();
+            (async () => {
+                await User.sync({ force: true });
+                // Table created
+                const users = await User.findAll();
+               console.log("Users:")
+               console.log(users);
+
+            })();
+           console.log('Connection has been established successfully.');
+            return res.status(200).send();
+        } catch (error) {
+           console.error('Unable to connect to the database:', error);
+            return res.status(503).send();
+        }
+    })();
+});
+
 app.use('/', (req, res) => {
    console.log("404 not found  ");
     return res.status(404).send();
