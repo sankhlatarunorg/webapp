@@ -303,14 +303,14 @@ app.get('/healthz', function (req, res) {
     (async () => {
         try {
             await database.sequelize.authenticate();
-            (async () => {
-                await User.sync({ force: true });
-                // Table created
-                const users = await User.findAll();
-               console.log("Users:")
-               console.log(users);
+            // (async () => {
+            //     await User.sync({ force: true });
+            //     // Table created
+            //     const users = await User.findAll();
+            //    console.log("Users:")
+            //    console.log(users);
 
-            })();
+            // })();
            console.log('Connection has been established successfully.');
             return res.status(200).send();
         } catch (error) {
