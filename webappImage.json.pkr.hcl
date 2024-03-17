@@ -32,7 +32,7 @@ variable "credentials_file" {
 
 variable "image_name" {
   type    = string
-  default = "csye6225-image-a3"
+  default = "csye6225-image-a3-trial"
 }
 
 variable "project_id" {
@@ -100,6 +100,10 @@ build {
     destination = "/tmp/csye-6225.service"
     direction   = "upload"
     source      = "systemd-service/csye-6225.service"
+  }
+
+  provisioner "shell"{
+      script = "./scripts/opsAgent.sh"
   }
 
   provisioner "shell" {
