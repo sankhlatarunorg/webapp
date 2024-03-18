@@ -1,12 +1,16 @@
 const Logger = require('node-json-logger');
 const fs = require('fs');
-const path = require('path');
 
-const logFilePath = '/var/log/webapp/myapp.log';
+const logFile = '/var/log/webapp/myapp.log';
+const logger = new Logger();
 
-const logger = new Logger({
-  logFilePath,
-  timestampFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ',
-});
+if (!fs.existsSync(logFile)) {
+  fs.writeFileSync(logFile, '');
+}
 
+const logStream = fs.createWriteStream(logFile, { flags: 'a' });
+process.stdout.write = logStream.write.bind(logStream);
+process.stderr.write = logStream.write.bind(logStream);
+
+logger.info('This is an info message');
 module.exports = logger;
