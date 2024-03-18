@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const { checkIfPayloadIsEmpty } = require('./service');
 const database = require('./Model');
 const User = require('./Model').users;
-const logger = require('./path/to/logger');
+const logger = require('./Logger');
 
 var app = express();
 app.use(bodyParser.json());
