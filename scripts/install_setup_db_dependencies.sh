@@ -18,3 +18,10 @@ ls
 sudo npm install -y
 ls
 sudo chown -R csye6225:csye6225 ./
+sudo mkdir /var/log/webapp
+cd /var/log/webapp
+sudo touch myapp.log
+ls -l /var/log/webapp/myapp.log
+sudo chown -R csye6225:csye6225 /var/log/webapp/myapp.log
+sudo chmod +w /var/log/webapp/myapp.log
+ls -l /var/log/webapp/myapp.log
