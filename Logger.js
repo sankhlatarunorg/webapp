@@ -1,7 +1,7 @@
 const Logger = require('node-json-logger');
 const fs = require('fs');
 
-const logFile = '/var/log/webapp/myapp.log';
+const logFile = './myapp.log';
 const logger = new Logger();
 
 if (!fs.existsSync(logFile)) {
