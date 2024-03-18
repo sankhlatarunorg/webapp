@@ -6,7 +6,7 @@ const logFilePath = '/var/log/webapp/myapp.log';
 
 const logger = new Logger({
   logFilePath,
-  timestampFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ', // Customize timestamp format if needed
+  timestampFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ',
 });
 
 module.exports = logger;
