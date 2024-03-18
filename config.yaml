@@ -3,7 +3,7 @@ logging:
     my-app-receiver:
       type: files
       include_paths:
-        - /tmp/webapp/var/log/myapp.log
+        - /var/log/webapp/myapp.log
       record_log_file_path: true
   processors:
     my-app-processor:

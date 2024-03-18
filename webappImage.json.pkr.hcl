@@ -102,20 +102,20 @@ build {
     source      = "systemd-service/csye-6225.service"
   }
 
-  provisioner "shell"{
-      script = "./scripts/opsAgent.sh"
+  provisioner "shell" {
+    script = "./scripts/opsAgent.sh"
   }
 
-   provisioner "file" {
+  provisioner "file" {
     direction   = "upload"
-    source      = "./config.yaml" 
+    source      = "./config.yaml"
     destination = "/tmp/config.yaml"
   }
 
   provisioner "shell" {
     inline = [
-      "sudo mv /tmp/config.yaml /etc/google-cloud-ops-agent/config.yaml", 
-      "sudo systemctl restart google-cloud-ops-agent" 
+      "sudo mv /tmp/config.yaml /etc/google-cloud-ops-agent/config.yaml",
+      "sudo systemctl restart google-cloud-ops-agent"
     ]
   }
 
