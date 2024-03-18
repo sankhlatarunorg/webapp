@@ -1,5 +1,6 @@
 
-const {Sequelize,DataTypes} = require('sequelize')
+const {Sequelize,DataTypes} = require('sequelize');
+const logger = require('../Logger');
 require('dotenv').config();
 
 const sequelize = new Sequelize(
@@ -14,9 +15,9 @@ const sequelize = new Sequelize(
 );
 
 sequelize.authenticate().then(() => {
-    console.log(`Database connected to discover`)
+    logger.info(`Database connected to discover`);
 }).catch((err) => {
-    console.log(`Start your Database: `+err)
+    logger.error(`Database connection failed: `+err);
 })
 
 const database = {}

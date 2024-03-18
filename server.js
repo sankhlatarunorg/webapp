@@ -50,7 +50,7 @@ async function authenticate(req, res) {
         const [username, password] = credentials.split(':');
         return User.findOne({ where: { username: username } })
             .then((user) => {
-                console.log("found user: ", user);
+                logger.info("found user:", user);
                 if (!user) {
                     return res.status(401).send();
                 }
@@ -61,7 +61,8 @@ async function authenticate(req, res) {
                         return res.status(401).send();
                     }
                 }).catch((e) => {
-                    console.log(e);
+                    logger.error("error:", e);
+                    logger.trace("error:", e);
                     return res.status(400).send();
                 });
 
@@ -147,17 +148,13 @@ app.get('/v1/user/self', (req, res) => {
         return authenticate(req, res)
             .then((result) => {
                 if (result != undefined) {
-                    console.log("result status code:", result?.statusCode);
+                    logger.info("result status code:", result?.statusCode);
                     if ([503, 401, 400].indexOf(result?.statusCode) !== -1) {
-                        console.log("checking status code");
                         return res.status(result.statusCode).send();
                     }
                 }
                 logger.info("Finished authenticating");
-                console.log("get user self");
                 const user = req.user;
-                console.log("response stats code:", res.statusCode);
-                console.log("response headers: ", res.getHeaders());
                 return res.status(200).send({
                     "id": user.id,
                     "first_name": user.first_name,
@@ -188,13 +185,10 @@ app.put('/v1/user/self', async (req, res, next) => {
         return authenticate(req, res, next)
             .then((result) => {
                 if (result != undefined) {
-                    console.log("result status code:", result?.statusCode);
                     if ([503, 401, 400].indexOf(result?.statusCode) !== -1) {
-                        console.log("checking status code");
                         return res.status(result.statusCode).send();
                     }
                 }
-                console.log("Finished authenticating");
                 if (req.body.first_name === undefined || req.body.last_name === undefined || req.body.password === undefined || req.body.username === undefined) {
                     logger.warn("error:", "missing parameters");
                     return res.status(400).send();
@@ -212,23 +206,22 @@ app.put('/v1/user/self', async (req, res, next) => {
                         logger.info("user updated");
                         return res.status(204).send()
                     }).catch((e) => {
-                        console.log(e);
+                        logger.trace("error:", e);
                         logger.error("error:", e);
                         return res.status(400).send();
                     });
                 }
                 ).catch((e) => {
-                    console.log(e);
+                    logger.trace("error:", e);
                     logger.error("error:", e);
                     return res.status(400).send();
                 });
             }).catch((e) => {
-                console.log(e);
+                logger.trace("error:", e);
                 logger.error("error:", e);
                 return res.status(400).send();
             });
     } catch (e) {
-        console.log(e);
         logger.trace("error:", e);
         return res.status(400).send();
     }
@@ -248,7 +241,6 @@ app.post('/v1/user/self', (req, res) => {
                 if ([503, 400].indexOf(result?.statusCode) !== -1) {
                     return res.status(result.statusCode).send();
                 }
-                console.log("post user self");
                 if (req.body.first_name === undefined || req.body.last_name === undefined || req.body.password === undefined || req.body.username === undefined) {
                     logger.warn("error:", "missing parameters");
                     return res.status(400).send();
@@ -258,7 +250,6 @@ app.post('/v1/user/self', (req, res) => {
                         username: req.body.username,
                     },
                 }).then((username) => {
-                    console.log(username);
                     if (username !== null) {
                         logger.warn("error:", "username already exists");
                         return res.status(409).send();
@@ -285,28 +276,23 @@ app.post('/v1/user/self', (req, res) => {
                                 });
                             });
                         }).catch((e) => {
-                            console.log(e);
                             logger.error("error:", e);
                             return res.status(400).send();
                         });;
                     }).catch((e) => {
-                        console.log(e);
                         logger.error("error:", e);
                         return res.status(400).send();
                     });
                 }).catch((e) => {
-                    console.log(e);
                     logger.error("error:", e);
                     return res.status(400).send();
                 });
 
             }).catch((e) => {
-                console.log(e);
                 logger.error("error:", e);
                 return res.status(400).send();
             });
     } catch (e) {
-        console.log(e);
         logger.trace("error:", e);
         return res.status(400).send();
     }
@@ -326,23 +312,23 @@ app.get('/healthz', function (req, res) {
     (async () => {
         try {
             await database.sequelize.authenticate();
-            // (async () => {
-            //     await User.sync({ force: true });
-            //     // Table created
-            //     const users = await User.findAll();
-            //    console.log("Users:")
-            //    console.log(users);
-
-            // })();
-            console.log('Connection has been established successfully.');
-            logger.info("db connected");
+            logger.info("Connection has been established successfully.");
             return res.status(200).send();
         } catch (error) {
-            console.error('Unable to connect to the database:', error);
             logger.error("db not connected");
             return res.status(503).send();
         }
     })();
+});
+
+app.get('/logger', function (req, res) {    
+    logger.info("info message");
+    logger.warn("warning message");
+    logger.error("error message");
+    logger.debug("debug message");
+    logger.trace("trace message");
+    logger.fatal("fatal message");
+    return res.status(200).send();
 });
 
 app.get('/sync', function (req, res) {
@@ -361,31 +347,24 @@ app.get('/sync', function (req, res) {
             (async () => {
                 await User.sync({ force: true });
                 logger.info("table created");
-                // Table created
                 const users = await User.findAll();
-                console.log("Users:")
-                console.log(users);
-
             })();
-            console.log('Connection has been established successfully.');
+            logger.info("Connection has been established successfully.");
             return res.status(200).send();
         } catch (error) {
-            logger.error("db not connected");
-            console.error('Unable to connect to the database:', error);
+            logger.error('Unable to connect to the database:', error);
             return res.status(503).send();
         }
     })();
 });
 
 app.use('/', (req, res) => {
-    console.log("404 not found  ");
-    logger.error("error:", "not found");
+    logger.error("error:", "404 not found");
     return res.status(404).send();
 });
 
 app.listen(3000, function () {
     logger.info('Health Check Application listening on port 3000!');
-    console.log('Health Check Application listening on port 3000!');
 });
 
 
