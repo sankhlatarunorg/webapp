@@ -15,13 +15,8 @@ logging:
       fields:
         severity:
           move_from: jsonPayload.level
-    move_timestamp:
-      type: modify_fields
-      fields:
-        timestamp:
-          move_from: jsonPayload.timestamp
   service:
     pipelines:
       default_pipeline:
         receivers: [my-app-receiver]
-        processors: [my-app-processor, move_severity,move_timestamp]
+        processors: [my-app-processor, move_severity]
