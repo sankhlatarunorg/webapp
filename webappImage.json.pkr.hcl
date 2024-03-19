@@ -88,7 +88,7 @@ build {
   }
 
   provisioner "file" {
-    destination = "/opt/webapp/webapp.zip"
+    destination = "/tmp/webapp/webapp.zip"
     source      = "./webapp.zip"
   }
 
@@ -97,7 +97,7 @@ build {
   }
 
   provisioner "file" {
-    destination = "/opt/csye-6225.service"
+    destination = "/tmp/csye-6225.service"
     direction   = "upload"
     source      = "systemd-service/csye-6225.service"
   }
@@ -109,18 +109,18 @@ build {
   provisioner "file" {
     direction   = "upload"
     source      = "./config.yaml"
-    destination = "/opt/config.yaml"
+    destination = "/tmp/config.yaml"
   }
 
   provisioner "shell" {
     inline = [
-      "sudo mv /opt/config.yaml /etc/google-cloud-ops-agent/config.yaml",
+      "sudo mv /tmp/config.yaml /etc/google-cloud-ops-agent/config.yaml",
       "sudo systemctl restart google-cloud-ops-agent"
     ]
   }
 
   provisioner "shell" {
-    inline = ["sudo mv /opt/csye-6225.service /etc/systemd/system/", "sudo systemctl daemon-reload", "sudo systemctl enable csye-6225"]
+    inline = ["sudo mv /tmp/csye-6225.service /etc/systemd/system/", "sudo systemctl daemon-reload", "sudo systemctl enable csye-6225"]
   }
 
 }
