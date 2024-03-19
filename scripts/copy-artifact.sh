@@ -1,2 +1,2 @@
 #!/bin/bash
-mkdir -p /tmp/webapp
+mkdir -p /opt/webapp
