@@ -3,7 +3,10 @@ const fs = require('fs');
 
 const altLogFile = './var/log/myapp.log';
 const primaryLogFile = '/var/log/webapp/myapp.log';
-const logger = new Logger();
+const logger = new Logger({
+  timestampFormat: 'YYYY-MM-DD HH:mm:ss.SSS',
+  timezone: 'US/Eastern',
+});
 
 // if (!fs.existsSync(logFile)) {
 //   fs.writeFileSync(logFile, '');
