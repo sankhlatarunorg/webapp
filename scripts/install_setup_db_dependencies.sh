@@ -12,7 +12,7 @@ sudo yum install -y nodejs
 sudo dnf install -y git
 sudo yum -y install zip unzip
 cd ..
-cd /tmp/webapp
+cd /opt/webapp
 sudo unzip webapp.zip
 ls
 sudo npm install -y
