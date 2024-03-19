@@ -15,8 +15,6 @@ logging:
       fields:
         severity:
           move_from: jsonPayload.level
-        timestamp:
-          move_from: jsonPayload.timestamp
   service:
     pipelines:
       default_pipeline:
