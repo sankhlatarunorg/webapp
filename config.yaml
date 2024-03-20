@@ -10,7 +10,6 @@ logging:
       type: parse_json
       time_key: time
       time_format: "%Y-%m-%d %H:%M:%S.%L"
-      time_zone: America/New_York
     move_severity:
       type: modify_fields
       fields:
