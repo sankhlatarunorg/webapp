@@ -4,8 +4,9 @@ const fs = require('fs');
 const altLogFile = './var/log/myapp.log';
 const primaryLogFile = '/var/log/webapp/myapp.log';
 const logger = new Logger({
-  timestampFormat: 'YYYY-MM-DD HH:mm:ss.SSS',
-  timezone: 'US/Eastern',
+  timestamp: true,
+  format: 'YYYY-MM-DD HH:mm:ss.SSS',
+  timezone: 'America/New_York',
 });
 
 // if (!fs.existsSync(logFile)) {
