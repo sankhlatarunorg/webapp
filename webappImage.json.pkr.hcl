@@ -32,7 +32,7 @@ variable "credentials_file" {
 
 variable "image_name" {
   type    = string
-  default = "csye6225-image-a3-trial"
+  default = "csye6225-image-a3-dummy"
 }
 
 variable "project_id" {

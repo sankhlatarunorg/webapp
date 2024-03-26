@@ -42,7 +42,12 @@ module.exports = (sequelize,DataTypes,Sequelize)=>{
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
         allowNull: false      
-    }
+      },
+      is_verified: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+        allowNull: false
+      }
     } ,{
       freezeTableName: true,
     })

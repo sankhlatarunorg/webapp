@@ -8,6 +8,12 @@ const { checkIfPayloadIsEmpty } = require('./service');
 const database = require('./Model');
 const User = require('./Model').users;
 const logger = require('./Logger');
+const { PubSub } = require('@google-cloud/pubsub');
+
+const pubSubClient = new PubSub();
+
+const topicName = 'verify_email';
+
 
 var app = express();
 app.use(bodyParser.json());
@@ -105,6 +111,28 @@ async function checkIfAuthenticated(req, res) {
         return res.status(400).send();
     }
 }
+
+async function publishMessage(user) {
+    const topic = pubSubClient.topic(topicName);
+    const messageData = `${user.id}:${user.username}`;
+    logger.info("messageData:", messageData);
+    messageData = base64.encode(messageData);
+    logger.info("messageData:", messageData);
+    const decoded = base64.decode(messageData);
+    const userId = decoded.split(":")[0];
+    const email = decoded.split(":")[1];
+    logger.info("userId:", userId);
+    logger.info("email:", email);
+  
+    const dataBuffer = Buffer.from(JSON.stringify(messageData));
+  
+    try {
+      await topic.publish(dataBuffer);
+      console.log('Message published successfully.');
+    } catch (error) {
+      console.error('Error publishing message:', error);
+    }
+  }
 
 app.use((error, req, res, next) => {
     if (error instanceof SyntaxError) {
@@ -266,6 +294,7 @@ app.post('/v1/user/self', (req, res) => {
                                     username: req.body.username,
                                 },
                             }).then((user) => {
+                                publishMessage(user).then(() => {
                                 return res.status(201).json({
                                     "id": user.id,
                                     "first_name": user.first_name,
@@ -273,6 +302,10 @@ app.post('/v1/user/self', (req, res) => {
                                     "username": user.username,
                                     "account_created": user.account_created,
                                     "account_updated": user.account_updated
+                                });
+                                }).catch((e) => {
+                                    logger.error("error:", e);
+                                    return res.status(400).send();
                                 });
                             });
                         }).catch((e) => {
@@ -356,6 +389,44 @@ app.get('/sync', function (req, res) {
             return res.status(503).send();
         }
     })();
+});
+
+app.get('/verifyaccount', function (req, res) {
+    try{
+        const token = req.query.token;
+        if(token === undefined){
+            logger.error("error:", "token not present");
+            return res.status(400).send();
+        }
+        const decoded = base64.decode(token);
+        const userId = decoded.split(":")[0];
+        const email = decoded.split(":")[1];
+        return User.findOne({ where: { id: userId, username: email } }).then((user) => {
+            if (!user) {
+                logger.error("error:", "user not found");
+                return res.status(400).send();
+            }
+            return User.update({
+                is_verified: true
+            }, {
+                where: {
+                    id: userId
+                }
+            }).then(() => {
+                logger.info("user verified");
+                return res.status(204).send();
+            }).catch((e) => {
+                logger.error("error:", e);
+                return res.status(400).send();
+            });
+        }).catch((e) => {
+            logger.error("error:", e);
+            return res.status(400).send();
+        });
+    }catch(e){
+        logger.error("error:", e);
+        return res.status(400).send();
+    }
 });
 
 app.use('/', (req, res) => {
