@@ -132,25 +132,25 @@ jobs:
       - name: Approval
         run: bash ./scripts/testing_yaml.sh
   
-  # build_custom_image:
-  #   name: Build Custom Image
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
+  build_custom_image:
+    name: Build Custom Image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-  #     - name : Build Artifact
-  #       run : zip -r webapp.zip ./
+      - name : Build Artifact
+        run : zip -r webapp.zip ./
 
-  #     - name: Approval
-  #       run: bash ./scripts/testing_yaml.sh
-  #     - name: Packer initialize
-  #       uses: hashicorp/packer-github-actions@master
-  #       with:
-  #         command: init
+      - name: Approval
+        run: bash ./scripts/testing_yaml.sh
+      - name: Packer initialize
+        uses: hashicorp/packer-github-actions@master
+        with:
+          command: init
       
-  #     - name: Set up Packer
-  #       uses: hashicorp/packer-github-actions@master
-  #       with:
-  #         command: build 
-  #         target:  webappImage.json.pkr.hcl
+      - name: Set up Packer
+        uses: hashicorp/packer-github-actions@master
+        with:
+          command: build 
+          target:  webappImage.json.pkr.hcl
