@@ -47,6 +47,11 @@ module.exports = (sequelize,DataTypes,Sequelize)=>{
         type: DataTypes.BOOLEAN,
         defaultValue: false,
         allowNull: false
+      },
+      verification_email_timestamp:{
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+        allowNull: true
       }
     } ,{
       freezeTableName: true,
