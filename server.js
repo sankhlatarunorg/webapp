@@ -60,6 +60,10 @@ async function authenticate(req, res) {
                 if (!user) {
                     return res.status(401).send();
                 }
+                if(user.is_verified === false){
+                    logger.error("error:", "user not verified");
+                    return res.status(401).json({"message": "Activate your account by verifying email"});
+                }
                 req.user = user;
                 return bcrypt.compare(password, user.password).then((result) => {
                     logger.info("finished checking user");
@@ -113,20 +117,28 @@ async function checkIfAuthenticated(req, res) {
 }
 
 async function publishMessage(user) {
-    const topic = pubSubClient.topic(topicName);
-    const messageData = `${user.id}:${user.username}`;
-    logger.info("messageData:", messageData);
-    messageData = base64.encode(messageData);
-    logger.info("messageData:", messageData);
-    const decoded = base64.decode(messageData);
-    const userId = decoded.split(":")[0];
-    const email = decoded.split(":")[1];
-    logger.info("userId:", userId);
-    logger.info("email:", email);
-  
-    const dataBuffer = Buffer.from(JSON.stringify(messageData));
-  
     try {
+        const topic = pubSubClient.topic(topicName);
+        const messageData = `${user.id}:${user.username}`;
+        logger.info("publishMessage messageData:", messageData);
+        encodedMessageData = Buffer.from(messageData).toString('base64');
+
+        console.log('encodedMessageData:', encodedMessageData);
+        const decodedData = Buffer.from(encodedMessageData, 'base64').toString('utf-8');
+        console.log('Decoded:', decodedData);
+        console.log('Decoded:', decodedData.split(":")[0], decodedData.split(":")[1]);
+
+        // messageData = base64.encode(messageData);
+        // logger.info("publishMessage messageData encode:", info);
+        // const decoded = base64.decode(messageData);
+        // const userId = decoded.split(":")[0];
+        // const email = decoded.split(":")[1];
+        // logger.info("userId:", userId);
+        // logger.info("email:", email);
+    
+        const dataBuffer = Buffer.from(JSON.stringify(messageData));
+        console.log('dataBuffer:', dataBuffer);
+    
       await topic.publish(dataBuffer);
       console.log('Message published successfully.');
     } catch (error) {
@@ -393,18 +405,22 @@ app.get('/sync', function (req, res) {
 
 app.get('/verifyaccount', function (req, res) {
     try{
+        console.log('req.query:', req.query);
         const token = req.query.token;
         if(token === undefined){
             logger.error("error:", "token not present");
             return res.status(400).send();
         }
-        const decoded = base64.decode(token);
+        console.log('token:', token);   
+        const decoded = JSON.parse(Buffer.from(token, 'base64').toString());
+
+        // const decoded = base64.decode(token);
         const userId = decoded.split(":")[0];
         const email = decoded.split(":")[1];
         return User.findOne({ where: { id: userId, username: email } }).then((user) => {
             if (!user) {
                 logger.error("error:", "user not found");
-                return res.status(400).send();
+                return res.status(400).json({"message": "User not found"});
             }
             return User.update({
                 is_verified: true
@@ -414,16 +430,20 @@ app.get('/verifyaccount', function (req, res) {
                 }
             }).then(() => {
                 logger.info("user verified");
-                return res.status(204).send();
+                return res.status(204).send({"message": "User verified"});
             }).catch((e) => {
-                logger.error("error:", e);
+                // console.log('error:', e);
+                logger.error(`error: ${e}`);
+
                 return res.status(400).send();
             });
         }).catch((e) => {
-            logger.error("error:", e);
+            // console.log('error:', e);
+            logger.error(`error: ${e}`);
             return res.status(400).send();
         });
     }catch(e){
+        // console.log('error:', e);
         logger.error("error:", e);
         return res.status(400).send();
     }
