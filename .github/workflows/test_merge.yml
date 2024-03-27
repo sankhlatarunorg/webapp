@@ -28,6 +28,7 @@ jobs:
               DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
               DB_NAME:     ${{ secrets.DB_NAME }}
               DB_DIALECT : ${{ secrets.DB_DIALECT }}
+              BUILD_ENV : ${{ secrets.BUILD_ENV }}
             run: |
               sudo /etc/init.d/mysql start
               mysql -e "CREATE DATABASE IF NOT EXISTS $DB_NAME;" -u$DB_USER -p$DB_PASSWORD
@@ -49,6 +50,7 @@ jobs:
               DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
               DB_NAME:     ${{ secrets.DB_NAME }}
               DB_DIALECT : ${{ secrets.DB_DIALECT }}
+              BUILD_ENV : ${{ secrets.BUILD_ENV }}
             run: npm start & sleep 8 && npm test
     
     prepare_artifact:
