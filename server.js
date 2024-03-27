@@ -422,6 +422,24 @@ app.get('/verifyaccount', function (req, res) {
                 logger.error("error:", "user not found");
                 return res.status(400).json({"message": "User not found"});
             }
+            // check if user is already verified
+            if(user.is_verified === true){
+                logger.error("error:", "user already verified");
+                return res.status(400).json({"message": "User already verified"});
+            }
+
+            // check if verification_email_timestamp is greater than current time by 2 mins
+            const currentTime = new Date();
+            const verificationEmailTimestamp = new Date(user.verification_email_timestamp);
+            logger.info(`currentTime: ${currentTime}`);
+            logger.info(`verificationEmailTimestamp: ${verificationEmailTimestamp}`);
+            const diff = currentTime - verificationEmailTimestamp;
+            logger.info(`diff: ${diff}`);
+            if(diff > 120000){
+                logger.error("error:", "token expired");
+                return res.status(400).json({"message": "Token expired"});
+            }
+
             return User.update({
                 is_verified: true
             }, {
@@ -430,7 +448,7 @@ app.get('/verifyaccount', function (req, res) {
                 }
             }).then(() => {
                 logger.info("user verified");
-                return res.status(204).send({"message": "User verified"});
+                return res.status(204).json({"message": "User verified"});
             }).catch((e) => {
                 // console.log('error:', e);
                 logger.error(`error: ${e}`);
