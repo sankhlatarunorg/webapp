@@ -51,7 +51,7 @@ jobs:
               DB_NAME:     ${{ secrets.DB_NAME }}
               DB_DIALECT : ${{ secrets.DB_DIALECT }}
               BUILD_ENV : ${{ secrets.BUILD_ENV }}
-            run: npm start & sleep 8 && npm test
+            run: npm test
     
     prepare_artifact:
         name: Prepare Artifact
