@@ -6,7 +6,6 @@ const primaryLogFile = '/var/log/webapp/myapp.log';
 const logger = new Logger({
   timestamp: true,
   format: 'YYYY-MM-DD HH:mm:ss.SSS',
-  timezone: 'America/New_York',
 });
 
 // if (!fs.existsSync(logFile)) {
