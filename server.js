@@ -306,19 +306,6 @@ app.post('/v1/user/self', (req, res) => {
                                     username: req.body.username,
                                 },
                             }).then((user) => {
-                                if(process.env.BUILD_ENV == 'test'){
-                                    return res.status(201).json({
-                                        "id": user.id,
-                                        "first_name": user.first_name,
-                                        "last_name": user.last_name,
-                                        "username": user.username,
-                                        "account_created": user.account_created,
-                                        "account_updated": user.account_updated
-                                    }).catch((e) => {
-                                        logger.error("error:", e);
-                                        return res.status(400).send();
-                                    });
-                                }else{
                                     publishMessage(user).then(() => {
                                     return res.status(201).json({
                                         "id": user.id,
@@ -332,7 +319,6 @@ app.post('/v1/user/self', (req, res) => {
                                         logger.error("error:", e);
                                         return res.status(400).send();
                                     });
-                                }
                             });
                         }).catch((e) => {
                             logger.error("error:", e);
