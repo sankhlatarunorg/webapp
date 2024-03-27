@@ -23,10 +23,10 @@ describe("User API Integration Tests", () => {
 
   it("Test 1 - Create Account and Get User", async () => {
     const response = await request(app).post("/v1/user/self").send({
-      first_name: "Rajiv",
-      last_name: "Singh",
+      first_name: "testuser",
+      last_name: "lastnametest",
       password: "Pass@123",
-      username: "rajiv@test.com",
+      username: "testuser@test.com",
     });
     console.log(response.body);
    
@@ -36,7 +36,7 @@ describe("User API Integration Tests", () => {
         .get("/v1/user/self")
         .set(
             "Authorization",
-            "Basic " + Buffer.from("rajiv@test.com:Pass@123").toString("base64")
+            "Basic " + Buffer.from("testuser@test.com:Pass@123").toString("base64")
         );
 
     expect(getCreatedUser.status).toBe(200);
@@ -44,10 +44,10 @@ describe("User API Integration Tests", () => {
 
   it("Test 2 - Create Account and Validate using Get Call", async () => {
     const response = await request(app).post("/v1/user/self").send({
-      first_name: "Sourav",
-      last_name: "Singh",
+      first_name: "testuser2",
+      last_name: "lastnametest",
       password: "Pass@1234",
-      username: "sourav@test.com",
+      username: "testuser2@test.com",
     });
   
     expect(response.status).toBe(201);
@@ -56,13 +56,13 @@ describe("User API Integration Tests", () => {
         .put("/v1/user/self")
         .set(
             "Authorization",
-            "Basic " + Buffer.from("sourav@test.com:Pass@1234").toString("base64")
+            "Basic " + Buffer.from("testuser2@test.com:Pass@1234").toString("base64")
         )
         .send({
-            first_name: "Souravvv",
-            last_name: "Singhhh",
-            password: "Pass@12345",
-            username: "sourav@test.com"
+            first_name: "testuser2vv",
+            last_name: "lastnametesthh",
+            password: "12345",
+            username: "testuser2@test.com"
         });
 
     expect(update.status).toBe(204);
@@ -70,7 +70,7 @@ describe("User API Integration Tests", () => {
         .get("/v1/user/self")
         .set(
             "Authorization",
-            "Basic " + Buffer.from("sourav@test.com:Pass@12345").toString("base64")
+            "Basic " + Buffer.from("testuser2@test.com:12345").toString("base64")
         );
 
     expect(getUpdated.status).toBe(200);
