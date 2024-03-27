@@ -403,6 +403,15 @@ app.get('/sync', function (req, res) {
     })();
 });
 
+
+app.use('/verifyaccount', (req, res, next) => {
+    if (['GET'].indexOf(req.method) === -1) {
+        logger.fatal("error:", "method not allowed");
+        return res.status(405).send();
+    }
+    next();
+});
+
 app.get('/verifyaccount', function (req, res) {
     try{
         console.log('req.query:', req.query);
@@ -422,13 +431,11 @@ app.get('/verifyaccount', function (req, res) {
                 logger.error("error:", "user not found");
                 return res.status(400).json({"message": "User not found"});
             }
-            // check if user is already verified
             if(user.is_verified === true){
                 logger.error("error:", "user already verified");
                 return res.status(400).json({"message": "User already verified"});
             }
 
-            // check if verification_email_timestamp is greater than current time by 2 mins
             const currentTime = new Date();
             const verificationEmailTimestamp = new Date(user.verification_email_timestamp);
             logger.info(`currentTime: ${currentTime}`);
@@ -448,7 +455,7 @@ app.get('/verifyaccount', function (req, res) {
                 }
             }).then(() => {
                 logger.info("user verified");
-                return res.status(204).json({"message": "User verified"});
+                return res.status(200).json({"message": "User verified"});
             }).catch((e) => {
                 // console.log('error:', e);
                 logger.error(`error: ${e}`);
