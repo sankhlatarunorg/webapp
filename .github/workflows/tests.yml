@@ -153,6 +153,9 @@ jobs:
       
       - name: Set up Packer
         uses: hashicorp/packer-github-actions@master
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS:     ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS}}
+          CREDENTIALS : ${{ secrets.CREDENTIALS }}
         with:
           command: build 
           target:  webappImage.json.pkr.hcl
