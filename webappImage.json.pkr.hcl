@@ -27,7 +27,7 @@ packer {
 # https://www.packer.io/docs/templates/hcl_templates/variables#type-constraints for more info.
 variable "credentials_file" {
   type    = string
-  default = {{secrets.PACKER_CREDENTIALS_FILE}}
+  default = "./credentials.json"
 }
 
 variable "image_name" {
