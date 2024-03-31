@@ -142,7 +142,7 @@ async function publishMessage(user) {
 
 
         await topic.publish(dataBuffer);
-        logger.info(`Message published successfully.`);
+        logger.info(`Message published successfully. For User ${user.id} ${user.username}`);
 
     } catch (error) {
         logger.error(`Error publishing message: ${error}`);
@@ -198,6 +198,7 @@ app.get('/v1/user/self', (req, res) => {
                 }
                 logger.info("Finished authenticating");
                 const user = req.user;
+                logger.info(`User Details fetched successfully, User: ${user.id}`);
                 return res.status(200).send({
                     "id": user.id,
                     "first_name": user.first_name,
@@ -208,7 +209,6 @@ app.get('/v1/user/self', (req, res) => {
                 })
             }).catch((e) => {
                 logger.debug(`error: ${e}`);
-
                 return res.status(400).send();
             });
     } catch (e) {
@@ -247,7 +247,7 @@ app.put('/v1/user/self', async (req, res, next) => {
                             id: req.user.id
                         }
                     }).then(() => {
-                        logger.info("user updated");
+                        logger.info(`User updated successfully, User: ${req.user.id}`);
                         return res.status(204).send()
                     }).catch((e) => {
                         logger.trace(`error: ${e}`);
@@ -307,6 +307,7 @@ app.post('/v1/user/self', (req, res) => {
                             password: passwordHash,
                             username: req.body.username
                         }).then(() => {
+                            logger.info(`User created successfully, User: ${req.body.username}`);
                             return User.findOne({
                                 where: {
                                     username: req.body.username,
@@ -324,6 +325,7 @@ app.post('/v1/user/self', (req, res) => {
                                         "is_verified": true,
                                     });
                                 } else {
+                                    logger.info(`Publishing message for User ${user.id} ${user.username}`);
                                     publishMessage(user).then(() => {
                                         return res.status(201).json({
                                             "id": user.id,
