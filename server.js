@@ -62,17 +62,7 @@ async function authenticate(req, res) {
                 }
                 if (user.is_verified === false && process.env.BUILD_ENV !== 'test') {
                     logger.error("error:", "user not verified");
-                    const currentTime = new Date();
-                    const verificationEmailTimestamp = new Date(user.verification_email_timestamp);
-                    logger.info(`currentTime: ${currentTime}`);
-                    logger.info(`verificationEmailTimestamp: ${verificationEmailTimestamp}`);
-                    const diff = currentTime - verificationEmailTimestamp;
-                    logger.info(`diff: ${diff}`);
-                    if (diff > 120000) {
-                        logger.error("error:token expired");
-                        return res.status(403).json({ "message": "Token expired" });
-                    }
-                    return res.status(401).json({ "message": "Activate your account by verifying email" });
+                    return res.status(403).json({ "message": "Account is not verified" });
                 }
                 req.user = user;
                 return bcrypt.compare(password, user.password).then((result) => {
