@@ -81,6 +81,11 @@ jobs:
           - name : Build Artifact
             run : zip -r webapp.zip ./
     
+          - id: auth
+            uses: google-github-actions/auth@v2
+            with:
+              credentials_json: ${{ secrets.CREDENTIALS }}
+
           - name: Approval
             run: bash ./scripts/testing_yaml.sh
           - name: Packer initialize

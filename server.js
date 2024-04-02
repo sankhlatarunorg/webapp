@@ -62,6 +62,16 @@ async function authenticate(req, res) {
                 }
                 if (user.is_verified === false && process.env.BUILD_ENV !== 'test') {
                     logger.error("error:", "user not verified");
+                    const currentTime = new Date();
+                    const verificationEmailTimestamp = new Date(user.verification_email_timestamp);
+                    logger.info(`currentTime: ${currentTime}`);
+                    logger.info(`verificationEmailTimestamp: ${verificationEmailTimestamp}`);
+                    const diff = currentTime - verificationEmailTimestamp;
+                    logger.info(`diff: ${diff}`);
+                    if (diff > 120000) {
+                        logger.error("error:token expired");
+                        return res.status(403).json({ "message": "Token expired" });
+                    }
                     return res.status(401).json({ "message": "Activate your account by verifying email" });
                 }
                 req.user = user;
@@ -449,7 +459,7 @@ app.get('/verifyaccount', function (req, res) {
         return User.findOne({ where: { id: userId, username: email } }).then((user) => {
             if (!user) {
                 logger.error("error:user not found");
-                return res.status(400).json({ "message": "User not found" });
+                return res.status(404).json({ "message": "User not found" });
             }
             if (user.is_verified === true) {
                 logger.error("error: user already verified");
@@ -464,7 +474,7 @@ app.get('/verifyaccount', function (req, res) {
             logger.info(`diff: ${diff}`);
             if (diff > 120000) {
                 logger.error("error:token expired");
-                return res.status(400).json({ "message": "Token expired" });
+                return res.status(403).json({ "message": "Token expired" });
             }
 
             return User.update({
