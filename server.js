@@ -436,17 +436,17 @@ app.use('/verifyaccount', (req, res, next) => {
 app.get('/verifyaccount', function (req, res) {
     try {
         logger.info(`req.query: ${req.query}`);
-        const token = req.query.token;
-        if (token === undefined) {
+        const userId = req.query.id;
+        if (userId === undefined) {
             logger.error("error:token not present");
             return res.status(400).send();
         }
-        logger.info(`token: ${token}`);
-        const decoded = JSON.parse(Buffer.from(token, 'base64').toString());
+        logger.info(`token: ${userId}`);
+        // const decoded = JSON.parse(Buffer.from(token, 'base64').toString());
 
-        const userId = decoded.split(":")[0];
-        const email = decoded.split(":")[1];
-        return User.findOne({ where: { id: userId, username: email } }).then((user) => {
+        // const userId = decoded.split(":")[0];
+        // const email = decoded.split(":")[1];
+        return User.findOne({ where: { id: userId } }).then((user) => {
             if (!user) {
                 logger.error("error:user not found");
                 return res.status(404).json({ "message": "User not found" });
