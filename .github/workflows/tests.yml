@@ -161,3 +161,60 @@ jobs:
         with:
           command: build 
           target:  webappImage.json.pkr.hcl
+  update_instance_template_and_mig:
+      runs-on: ubuntu-latest
+      
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v2
+        - id: auth
+          uses: google-github-actions/auth@v2
+          with:
+            credentials_json: ${{ secrets.CREDENTIALS }}
+          
+        - name: Set up Google Cloud SDK
+          uses: google-github-actions/setup-gcloud@v0.2.0
+          with:
+            project_id: ${{ secrets.GCP_PROJECT_ID }}
+            service_account_key: ${{ secrets.GCP_SA_KEY }}
+            export_default_credentials: true
+        
+        - name: Get latest machine image id
+          id: get_image_id
+          run: |
+            latest_image_id=$( gcloud compute images list --format="value(NAME)" --sort-by="creationTimeStamp" --filter="name~csye" --limit=1)
+            echo "::set-output name=image_id::$latest_image_id"
+          
+        - name: Create new Instance Template version
+          id: create_template_version
+          run: |
+            gcloud compute instance-templates create webapp-vm-instance-template \
+              --source-instance-template webapp-vm-instance-template \
+              --image steps.get_image_id.outputs.image_id
+              -- region us-central1
+      #--image steps.get_image_id.outputs.image_id
+        
+        - name: Update Managed Instance Group
+          run: |
+            gcloud compute instance-groups managed set-instance-template webapp-instance-group-manager-1 \
+              -- template webapp-vm-instance-template \
+              -- region us-central1
+        
+        - name: Re-create instances in Managed Instance Group
+          run: |
+            gcloud compute instance-groups managed recreate-instances webapp-instance-group-manager-1 \
+              --region us-central1
+          
+        # Wait for the managed instance group to finish refreshing
+        - name: Wait for Managed Instance Group Refresh
+          id: wait_refresh
+          run: |
+            gcloud compute instance-groups managed wait-until --region us-central1 --quiet webapp-instance-group-manager-1 --stable
+        
+        # Set the workflow status based on the status of the instance group refresh
+        - name: Set workflow status
+          if: ${{ steps.wait_refresh.outcome == 'success' }}
+          run: exit 0
+        - name: Set workflow status
+          if: ${{ steps.wait_refresh.outcome == 'failure' }}
+          run: exit 1
