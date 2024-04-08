@@ -147,7 +147,7 @@ jobs:
           - name: Get latest machine image id
             id: get_image_id
             run: |
-              latest_image_id=$(gcloud compute images describe latest-image --format='value(selfLink)' --quiet)
+              latest_image_id=$( gcloud compute images list --format="value(NAME)" --sort-by="creationTimeStamp" --filter="name~csye" --limit=1)
               echo "::set-output name=image_id::$latest_image_id"
             
           - name: Create new Instance Template version
