@@ -188,14 +188,14 @@ jobs:
         - name: Create new Instance Template version
           id: create_template_version
           run: |
-            gcloud compute instance-templates create webapp-vm-instance-template \
+            gcloud compute instance-templates create webapp-vm-instance-template-1 \
               --instance-template-region us-central1
               --instantiate-from=custom-image, \custom-image=steps.get_image_id.outputs.image_id                  
         
         - name: Update Managed Instance Group
           run: |
             gcloud compute instance-groups managed set-instance-template webapp-instance-group-manager-1 \
-              -- template webapp-vm-instance-template \
+              -- template webapp-vm-instance-template-1 \
               -- region us-central1
         
         - name: Re-create instances in Managed Instance Group
