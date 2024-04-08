@@ -189,10 +189,8 @@ jobs:
           id: create_template_version
           run: |
             gcloud compute instance-templates create webapp-vm-instance-template \
-              --source-instance-template webapp-vm-instance-template \
-              --image steps.get_image_id.outputs.image_id
-              -- region us-central1
-      #--image steps.get_image_id.outputs.image_id
+              --instance-template-region us-central1
+              --instantiate-from=custom-image, \custom-image=steps.get_image_id.outputs.image_id                  
         
         - name: Update Managed Instance Group
           run: |
@@ -205,13 +203,11 @@ jobs:
             gcloud compute instance-groups managed recreate-instances webapp-instance-group-manager-1 \
               --region us-central1
           
-        # Wait for the managed instance group to finish refreshing
         - name: Wait for Managed Instance Group Refresh
           id: wait_refresh
           run: |
             gcloud compute instance-groups managed wait-until --region us-central1 --quiet webapp-instance-group-manager-1 --stable
         
-        # Set the workflow status based on the status of the instance group refresh
         - name: Set workflow status
           if: ${{ steps.wait_refresh.outcome == 'success' }}
           run: exit 0
