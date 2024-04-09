@@ -173,13 +173,7 @@ jobs:
           uses: google-github-actions/auth@v2
           with:
             credentials_json: ${{ secrets.CREDENTIALS }}
-          
-        # - name: Set up Google Cloud SDK
-        #   uses: google-github-actions/setup-gcloud@v0.2.0
-        #   with:
-        #     project_id: ${{ secrets.GCP_PROJECT_ID }}
-        #     service_account_key: ${{ secrets.GCP_SA_KEY }}
-            # export_default_credentials: true
+     
         
         # - name: Get latest machine image id
         #   id: get_image_id
@@ -187,58 +181,8 @@ jobs:
         #     latest_image_id=$( gcloud compute images list --format="value(NAME)" --sort-by="creationTimeStamp" --filter="name~csye" --limit=1)
         #     echo "::set-output name=image_id::$latest_image_id"
           
-        # - name: Create new Instance Template version
-        #   id: create_template_version
-        #   run: |
-        #     gcloud compute instance-templates create webapp-vm-instance-template-1 \
-        #       --instance-template-region us-central1
-        #       --custom-image=steps.get_image_id.outputs.image_id                  
-        
-        # - name: Update Managed Instance Group
-        #   run: |
-        #     gcloud compute instance-groups managed set-instance-template webapp-instance-group-manager-1 \
-        #       -- template webapp-vm-instance-template-1 \
-        #       -- region us-central1
-            
-        - name: gcloud
-          run: gcloud --quiet beta compute instance-templates create webapp-vm-instance-template-1 
-            --project=csye6225tarundev 
-            --machine-type=e2-standard-2 
-            --network-interface=subnet=webapp-subnetwork-1,no-address 
-            --instance-template-region=projects/csye6225tarundev/regions/us-central1 
-            --metadata=DB_HOST=10.17.0.3,DB_NAME=webapp,DB_PASSWORD=qFvH6HZKReonHYII,DB_USER=webapp,startup-script=\#\!/bin/bash$'\n'echo\ \"Web\ application\ is\ starting\ up...\"$'\n'if\ \[\[\ \!\ -e\ /tmp/webapp/.env\ \]\]\;\ then$'\n'\ \ touch\ /tmp/webapp/.env$'\n'fi$'\n'$'\n'if\ \[\[\ \!\ -e\ \"/var/run/webapp_configured\"\ \]\]\;\ then$'\n'\ \ echo\ \"Configuring\ web\ application...\"$'\n'\ \ \{$'\n'\ \ \ \ echo\ \"DB_USER=webapp\"$'\n'\ \ \ \ echo\ \"DB_PASSWORD=qFvH6HZKReonHYII\"$'\n'\ \ \ \ echo\ \"DB_HOST=10.17.0.3\"$'\n'\ \ \ \ echo\ \"DB_NAME=webapp\"$'\n'\ \ \}\ \>\>\ /tmp/webapp/.env$'\n'$'\n'\ \ touch\ /var/run/webapp_configured$'\n'else$'\n'\ \ echo\ \"Web\ application\ is\ already\ configured.\"$'\n'fi$'\n'$'\n'sudo\ systemctl\ stop\ csye-6225$'\n'sudo\ systemctl\ start\ csye-6225$'\n'sudo\ systemctl\ status\ csye-6225$'\n'echo\ \"Web\ application\ is\ configured.\"$'\n'echo\ \"Web\ application\ is\ running.\"$'\n' 
-            --maintenance-policy=MIGRATE 
-            --provisioning-model=STANDARD 
-            --service-account=webapp-service-account@csye6225tarundev.iam.gserviceaccount.com 
-            --scopes=https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.read 
-            --region=us-central1 
-            --tags=load-balancer-backend,allow-health-check,http-server,https-server 
-            --create-disk=auto-delete=yes,boot=yes,device-name=persistent-disk-0,image=projects/csye6225tarundev/global/images/csye6225-image-a8,kms-key=projects/csye6225tarundev/locations/us-central1/keyRings/webapp_key_7/cryptoKeys/webapp_key_7,mode=rw,size=100,type=pd-balanced 
-            --no-shielded-secure-boot 
-            --shielded-vtpm 
-            --shielded-integrity-monitoring 
-            --reservation-aral1/keyRings/webapp_key_7/cryptoKeys/webapp_key_7,mode=rw,size=100,type=pd-balanced 
-            --no-shielded-secure-boot 
-            --shielded-vtpm 
-            --shielded-integrity-monitoring 
-            --reservation-affinity=any
-
-            gcloud beta compute instance-templates create webapp-vm-instance-template-20240409-041455 
-            --project=csye6225tarundev --machine-type=e2-standard-2 --network-interface=subnet=webapp-subnetwork-1,no-address 
-            --instance-template-region=projects/csye6225tarundev/regions/us-central1 
-            --metadata=DB_HOST=10.17.0.13,DB_NAME=webapp,DB_PASSWORD=qFvH6HZKReonHYII,DB_USER=webapp,startup-script=\#\!/bin/bash$'\n'echo\ \"Web\ application\ is\ starting\ up...\"$'\n'if\ \[\[\ \!\ -e\ /tmp/webapp/.env\ \]\]\;\ then$'\n'\ \ touch\ /tmp/webapp/.env$'\n'fi$'\n'$'\n'if\ \[\[\ \!\ -e\ \"/var/run/webapp_configured\"\ \]\]\;\ then$'\n'\ \ echo\ \"Configuring\ web\ application...\"$'\n'\ \ \{$'\n'\ \ \ \ echo\ \"DB_USER=webapp\"$'\n'\ \ \ \ echo\ \"DB_PASSWORD=qFvH6HZKReonHYII\"$'\n'\ \ \ \ echo\ \"DB_HOST=10.17.0.13\"$'\n'\ \ \ \ echo\ \"DB_NAME=webapp\"$'\n'\ \ \}\ \>\>\ /tmp/webapp/.env$'\n'$'\n'\ \ touch\ /var/run/webapp_configured$'\n'else$'\n'\ \ echo\ \"Web\ application\ is\ already\ configured.\"$'\n'fi$'\n'$'\n'sudo\ systemctl\ stop\ csye-6225$'\n'sudo\ systemctl\ start\ csye-6225$'\n'sudo\ systemctl\ status\ csye-6225$'\n'echo\ \"Web\ application\ is\ configured.\"$'\n'echo\ \"Web\ application\ is\ running.\"$'\n' 
-            --service-account=webapp-service-account@csye6225tarundev.iam.gserviceaccount.com 
-            --scopes=https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.read 
-            --region=us-central1 --tags=load-balancer-backend,allow-health-check,http-server,https-server 
-            --create-disk=auto-delete=yes,boot=yes,device-name=persistent-disk-0,image=projects/csye6225tarundev/global/images/csye6225-image-a8,kms-key=projects/csye6225tarundev/locations/us-central1/keyRings/webapp_key_8/cryptoKeys/webapp_key_8,mode=rw,size=100,type=pd-balanced 
-            --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring --reservation-affinity=any
-        
-        # - name: Re-create instances in Managed Instance Group
-        #   run: |
-        #     gcloud compute instance-groups managed set-instance-template webapp-instance-group-manager-1 \
-        #       --region us-central1
-        #       --project csye6225tarundev
-        #       --template webapp-vm-instance-template-1 
+        - name: Create new Instance Template version
+          run:  gcloud beta compute instance-templates create webapp-vm-instance-template-20240409-041455 --project=csye6225tarundev --machine-type=e2-standard-2 --network-interface=subnet=webapp-subnetwork-1,no-address --instance-template-region=us-central1 --metadata=DB_HOST=10.17.0.13,DB_NAME=webapp,DB_PASSWORD=qFvH6HZKReonHYII,DB_USER=webapp,startup-script=\#\!/bin/bash$'\n'echo\ \"Web\ application\ is\ starting\ up...\"$'\n'if\ \[\[\ \!\ -e\ /tmp/webapp/.env\ \]\]\;\ then$'\n'\ \ touch\ /tmp/webapp/.env$'\n'fi$'\n'$'\n'if\ \[\[\ \!\ -e\ \"/var/run/webapp_configured\"\ \]\]\;\ then$'\n'\ \ echo\ \"Configuring\ web\ application...\"$'\n'\ \ \{$'\n'\ \ \ \ echo\ \"DB_USER=webapp\"$'\n'\ \ \ \ echo\ \"DB_PASSWORD=qFvH6HZKReonHYII\"$'\n'\ \ \ \ echo\ \"DB_HOST=10.17.0.13\"$'\n'\ \ \ \ echo\ \"DB_NAME=webapp\"$'\n'\ \ \}\ \>\>\ /tmp/webapp/.env$'\n'$'\n'\ \ touch\ /var/run/webapp_configured$'\n'else$'\n'\ \ echo\ \"Web\ application\ is\ already\ configured.\"$'\n'fi$'\n'$'\n'sudo\ systemctl\ stop\ csye-6225$'\n'sudo\ systemctl\ start\ csye-6225$'\n'sudo\ systemctl\ status\ csye-6225$'\n'echo\ \"Web\ application\ is\ configured.\"$'\n'echo\ \"Web\ application\ is\ running.\"$'\n' --maintenance-policy=MIGRATE --provisioning-model=STANDARD --service-account=webapp-service-account@csye6225tarundev.iam.gserviceaccount.com --scopes=https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.read --region=us-central1 --tags=load-balancer-backend,allow-health-check,http-server,https-server --create-disk=auto-delete=yes,boot=yes,device-name=persistent-disk-0,image=projects/csye6225tarundev/global/images/csye6225-image-a8,kms-key=projects/csye6225tarundev/locations/us-central1/keyRings/webapp_key_8/cryptoKeys/webapp_key_8,mode=rw,size=100,type=pd-balanced --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring --reservation-affinity=any
 
         - name: Managed rolling action start update
           run : gcloud beta compute instance-groups managed rolling-action start-update webapp-instance-group-manager-1 
