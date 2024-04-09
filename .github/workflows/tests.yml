@@ -135,35 +135,37 @@ jobs:
       - name: Approval
         run: bash ./scripts/testing_yaml.sh
   
-  build_custom_image:
-    name: Build Custom Image
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+  # build_custom_image:
+  #   name: Build Custom Image
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
 
-      - name : Build Artifact
-        run : zip -r webapp.zip ./
+  #     - name : Build Artifact
+  #       run : zip -r webapp.zip ./
 
-      - id: auth
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ secrets.CREDENTIALS }}
-      - name: Approval
-        run: bash ./scripts/testing_yaml.sh
-      - name: Packer initialize
-        uses: hashicorp/packer-github-actions@master
-        with:
-          command: init
+  #     - id: auth
+  #       uses: google-github-actions/auth@v2
+  #       with:
+  #         credentials_json: ${{ secrets.CREDENTIALS }}
+  #     - name: Approval
+  #       run: bash ./scripts/testing_yaml.sh
+  #     - name: Packer initialize
+  #       uses: hashicorp/packer-github-actions@master
+  #       with:
+  #         command: init
       
-      - name: Set up Packer
-        uses: hashicorp/packer-github-actions@master
-        with:
-          command: build 
-          target:  webappImage.json.pkr.hcl
+  #     - name: Set up Packer
+  #       uses: hashicorp/packer-github-actions@master
+  #       with:
+  #         command: build 
+  #         target:  webappImage.json.pkr.hcl
+
+
   update_instance_template_and_mig:
       runs-on: ubuntu-latest
-      needs: [build_custom_image]
+      # needs: [build_custom_image]
       steps:
         - name: Checkout repository
           uses: actions/checkout@v2
@@ -179,24 +181,25 @@ jobs:
         #     service_account_key: ${{ secrets.GCP_SA_KEY }}
             # export_default_credentials: true
         
-        - name: Get latest machine image id
-          id: get_image_id
-          run: |
-            latest_image_id=$( gcloud compute images list --format="value(NAME)" --sort-by="creationTimeStamp" --filter="name~csye" --limit=1)
-            echo "::set-output name=image_id::$latest_image_id"
+        # - name: Get latest machine image id
+        #   id: get_image_id
+        #   run: |
+        #     latest_image_id=$( gcloud compute images list --format="value(NAME)" --sort-by="creationTimeStamp" --filter="name~csye" --limit=1)
+        #     echo "::set-output name=image_id::$latest_image_id"
           
-        - name: Create new Instance Template version
-          id: create_template_version
-          run: |
-            gcloud compute instance-templates create webapp-vm-instance-template-1 \
-              --instance-template-region us-central1
-              --custom-image=steps.get_image_id.outputs.image_id                  
+        # - name: Create new Instance Template version
+        #   id: create_template_version
+        #   run: |
+        #     gcloud compute instance-templates create webapp-vm-instance-template-1 \
+        #       --instance-template-region us-central1
+        #       --custom-image=steps.get_image_id.outputs.image_id                  
         
-        - name: Update Managed Instance Group
-          run: |
-            gcloud compute instance-groups managed set-instance-template webapp-instance-group-manager-1 \
-              -- template webapp-vm-instance-template-1 \
-              -- region us-central1
+        # - name: Update Managed Instance Group
+        #   run: |
+        #     gcloud compute instance-groups managed set-instance-template webapp-instance-group-manager-1 \
+        #       -- template webapp-vm-instance-template-1 \
+        #       -- region us-central1
+            
         - name: gcloud
           run: gcloud --quiet beta compute instance-templates create webapp-vm-instance-template-1 
             --project=csye6225tarundev 
