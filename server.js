@@ -273,6 +273,7 @@ app.put('/v1/user/self', async (req, res, next) => {
 
 app.post('/v1/user/self', (req, res) => {
     try {
+        console.log("req.body post:", req.body);
         const allowedParameters = ['first_name', 'last_name', 'password', 'username'];
         const receivedParameters = Object.keys(req.body);
         const invalidParameters = receivedParameters.filter(param => !allowedParameters.includes(param));
