@@ -47,7 +47,7 @@ async function authenticate(req, res) {
         let check = await checkIfDBConnected();
         logger.info("db connection check:", check);
         if (check == false) {
-            logger.error("db not connected");
+            logger.error(`db not connected error: ${error}`);
             return res.status(503).send();
         }
 
@@ -101,7 +101,7 @@ async function checkIfAuthenticated(req, res) {
         }
         return checkIfDBConnected().then((check) => {
             if (check === false) {
-                logger.error("db not connected");
+                logger.error(`db not connected error: ${error}`);
                 return res.status(503).send();
             }
         }).catch((e) => {
@@ -382,7 +382,7 @@ app.get('/healthz', function (req, res) {
             logger.info("Connection has been established successfully.");
             return res.status(200).send();
         } catch (error) {
-            logger.error("db not connected");
+            logger.error(`db not connected error: ${error}`);
             return res.status(503).send();
         }
     })();
