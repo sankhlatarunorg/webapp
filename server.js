@@ -170,7 +170,7 @@ app.use('/healthz', (req, res, next) => {
     next();
 });
 
-app.use('/v1/user/self', (req, res, next) => {
+app.use('/v2/user/self', (req, res, next) => {
     if (['GET', 'PUT', 'POST'].indexOf(req.method) === -1) {
         logger.fatal("error:method not allowed");
         return res.status(405).send();
@@ -178,7 +178,7 @@ app.use('/v1/user/self', (req, res, next) => {
     next();
 });
 
-app.get('/v1/user/self', (req, res) => {
+app.get('/v2/user/self', (req, res) => {
     try {
         if (Object.keys(req.body).length !== 0) {
             logger.warn("error:body not empty");
@@ -217,7 +217,7 @@ app.get('/v1/user/self', (req, res) => {
     }
 });
 
-app.put('/v1/user/self', async (req, res, next) => {
+app.put('/v2/user/self', async (req, res, next) => {
     try {
         const allowedParameters = ['first_name', 'last_name', 'password', 'username'];
         const receivedParameters = Object.keys(req.body);
@@ -271,7 +271,7 @@ app.put('/v1/user/self', async (req, res, next) => {
     }
 });
 
-app.post('/v1/user/self', (req, res) => {
+app.post('/v2/user/self', (req, res) => {
     try {
         const allowedParameters = ['first_name', 'last_name', 'password', 'username'];
         const receivedParameters = Object.keys(req.body);
